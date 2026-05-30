@@ -31,6 +31,11 @@ class Session {
       'name': userName,
       'email': userEmail,
       'role': userRole,
+      'phone': userPhone,
+      'address': userAddress,
+      'dob': userDOB,
+      'gender': userGender,
+      'points': userPoints,
       'is_verified': isVerified ? 1 : 0,
       'profile_completed': profileCompleted ? 1 : 0,
     };
@@ -71,8 +76,7 @@ class Session {
     userPoints = int.tryParse(user['points']?.toString() ?? "0") ?? 0;
     isVerified =
         user.containsKey('is_verified') ? _isTrue(user['is_verified']) : true;
-    profileCompleted =
-        _isTrue(user['profile_completed']) || isProfileComplete();
+    profileCompleted = isProfileComplete();
     isLoggedIn = userId != null && (userEmail ?? '').isNotEmpty;
   }
 
@@ -122,6 +126,7 @@ class Session {
     return (userName ?? '').trim().isNotEmpty &&
         (userPhone ?? '').trim().isNotEmpty &&
         (userAddress ?? '').trim().isNotEmpty &&
+        (userDOB ?? '').trim().isNotEmpty &&
         (userGender ?? '').trim().isNotEmpty;
   }
 }

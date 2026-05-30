@@ -31,13 +31,14 @@ class _ProfilePageState extends State<ProfilePage> {
     return _nameController.text.trim().isNotEmpty &&
         _phoneController.text.trim().isNotEmpty &&
         _addressController.text.trim().isNotEmpty &&
+        _dobController.text.trim().isNotEmpty &&
         _genderController.text.trim().isNotEmpty;
   }
 
   void _showCompleteProfileMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text("Please complete your profile first"),
+        content: Text("Complete your profile to continue using Cravora."),
         backgroundColor: Colors.orange,
       ),
     );
@@ -47,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (!_profileComplete) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Please complete all required profile fields"),
+          content: Text("Complete your profile to continue using Cravora."),
           backgroundColor: Colors.orange,
         ),
       );
@@ -88,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
         if (wasIncomplete) {
           Navigator.pushNamedAndRemoveUntil(
             context,
-            '/home',
+            '/delivery',
             (route) => false,
           );
         }

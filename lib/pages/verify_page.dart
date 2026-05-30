@@ -83,7 +83,8 @@ class _VerifyPageState extends State<VerifyPage> {
           Navigator.pushNamedAndRemoveUntil(
               context, '/profile', (route) => false);
         } else {
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/delivery', (route) => false);
         }
       } else {
         if (!mounted) return;

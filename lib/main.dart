@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'session.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'pages/signup_page.dart';
@@ -30,6 +31,16 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  Widget _requireCompleteProfile(Widget page) {
+    if (Session.isLoggedIn &&
+        Session.userRole != 'admin' &&
+        !Session.profileCompleted) {
+      return ProfilePage();
+    }
+
+    return page;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -43,14 +54,16 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignupPage(),
-        '/home': (context) => HomePage(),
+        '/home': (context) => _requireCompleteProfile(HomePage()),
         '/about': (context) => AboutPage(),
-        '/restaurants': (context) => RestaurantsPage(),
-        '/delivery': (context) => DeliveryFoodPage(),
-        '/delivery_food': (context) => DeliveryFoodPage(),
+        '/restaurants': (context) => _requireCompleteProfile(RestaurantsPage()),
+        '/delivery': (context) => _requireCompleteProfile(DeliveryFoodPage()),
+        '/delivery_food': (context) =>
+            _requireCompleteProfile(DeliveryFoodPage()),
         '/profile': (context) => ProfilePage(),
-        '/order_history': (context) => OrderHistoryPage(),
-        '/support': (context) => SupportPage(),
+        '/order_history': (context) =>
+            _requireCompleteProfile(OrderHistoryPage()),
+        '/support': (context) => _requireCompleteProfile(SupportPage()),
         '/admin_dashboard': (context) => AdminDashboard(),
         '/admin_users': (context) => ManageUsersPage(),
         '/admin_restaurants': (context) => ManageRestaurantsPage(),
@@ -58,11 +71,14 @@ class MyApp extends StatelessWidget {
         '/admin_orders': (context) => ManageOrdersPage(),
         '/admin_support': (context) => ManageSupportPage(),
         '/admin_notifications': (context) => ManageNotificationsPage(),
-        '/notifications': (context) => NotificationsPage(),
-        '/place_order': (context) => PlaceOrderPage(),
-        '/food_details': (context) => FoodDetailsPage(),
-        '/confirm_payment': (context) => ConfirmPaymentPage(),
-        '/rewards': (context) => RewardsPage(),
+        '/notifications': (context) =>
+            _requireCompleteProfile(NotificationsPage()),
+        '/place_order': (context) => _requireCompleteProfile(PlaceOrderPage()),
+        '/food_details': (context) =>
+            _requireCompleteProfile(FoodDetailsPage()),
+        '/confirm_payment': (context) =>
+            _requireCompleteProfile(ConfirmPaymentPage()),
+        '/rewards': (context) => _requireCompleteProfile(RewardsPage()),
       },
     );
   }

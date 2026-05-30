@@ -34,11 +34,12 @@ if ($result->num_rows > 0) {
         }
 
         $payload = cravora_user_payload($user);
-        if ((int)$payload['profile_completed'] === 1 && (int)($user['profile_completed'] ?? 0) !== 1) {
-            $markProfile = $conn->prepare("UPDATE users SET profile_completed = 1 WHERE id = ?");
+        if ((int)$payload['profile_completed'] !== (int)($user['profile_completed'] ?? 0)) {
+            $markProfile = $conn->prepare("UPDATE users SET profile_completed = ? WHERE id = ?");
             if ($markProfile) {
                 $userId = (int)$user['id'];
-                $markProfile->bind_param("i", $userId);
+                $profileCompleted = (int)$payload['profile_completed'];
+                $markProfile->bind_param("ii", $profileCompleted, $userId);
                 $markProfile->execute();
                 $markProfile->close();
             }

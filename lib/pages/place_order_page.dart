@@ -41,16 +41,21 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
           }
           _appliedVoucherCode = data['code'];
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Voucher applied! You saved \$${_discountAmount.toStringAsFixed(2)}"), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                "Voucher applied! You saved \$${_discountAmount.toStringAsFixed(2)}"),
+            backgroundColor: Colors.green));
       } else {
         setState(() {
           _discountAmount = 0;
           _appliedVoucherCode = null;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['message']), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(data['message']), backgroundColor: Colors.red));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error validating voucher")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Error validating voucher")));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -59,8 +64,8 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
   Future<void> _confirmOrder() async {
     if (!Session.profileCompleted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Please complete your profile before placing an order."),
+        const SnackBar(
+          content: Text("Complete your profile to continue using Cravora."),
           backgroundColor: Colors.orange,
         ),
       );
@@ -69,7 +74,9 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
     }
 
     if (_addressController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter a delivery address"), backgroundColor: Colors.orange));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Please enter a delivery address"),
+          backgroundColor: Colors.orange));
       return;
     }
 
@@ -95,23 +102,24 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
 
       final data = json.decode(response.body);
       if (data['status'] == 'success') {
-
         Session.clearCart();
-        Session.userPoints += int.tryParse(data['points']?.toString() ?? "0") ?? 0;
+        Session.userPoints +=
+            int.tryParse(data['points']?.toString() ?? "0") ?? 0;
 
         Navigator.pushNamed(
           context,
           '/confirm_payment',
         );
-
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['message']), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(data['message']), backgroundColor: Colors.red));
         if (data['status'] == 'profile_incomplete') {
           Navigator.pushNamed(context, '/profile');
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error placing order")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Error placing order")));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -126,7 +134,8 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Checkout", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+        title: Text("Checkout",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
         backgroundColor: Colors.orange.shade700,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
@@ -177,8 +186,10 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     ),
                   ),
                 ],
@@ -192,7 +203,9 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
               SizedBox(height: 40),
               // Price Breakdown
               _buildPriceRow("Subtotal", originalPrice),
-              if (_discountAmount > 0) _buildPriceRow("Voucher Discount", -_discountAmount, isDiscount: true),
+              if (_discountAmount > 0)
+                _buildPriceRow("Voucher Discount", -_discountAmount,
+                    isDiscount: true),
               _buildPriceRow("Delivery Fee", 0.0, isFree: true),
 
               Padding(
@@ -203,8 +216,14 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Total Amount", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
-                  Text("\$${finalPrice.toStringAsFixed(2)}", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.red)),
+                  Text("Total Amount",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                  Text("\$${finalPrice.toStringAsFixed(2)}",
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.red)),
                 ],
               ),
 
@@ -214,12 +233,15 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
                   ? Center(child: CircularProgressIndicator(color: Colors.red))
                   : ElevatedButton(
                       onPressed: () => _confirmOrder(),
-                      child: Text("Place Order Now", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      child: Text("Place Order Now",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         minimumSize: Size(double.infinity, 65),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
                         elevation: 0,
                       ),
                     ),
@@ -234,7 +256,9 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
-      child: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black)),
+      child: Text(title,
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black)),
     );
   }
 
@@ -251,25 +275,39 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.network(food['image']!, width: 70, height: 70, fit: BoxFit.cover),
+            child: Image.network(food['image']!,
+                width: 70, height: 70, fit: BoxFit.cover),
           ),
           SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(food['name']!, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-                Text(quantity > 1 ? "Standard Portion x$quantity" : "Standard Portion", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                Text(food['name']!,
+                    style:
+                        TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                Text(
+                    quantity > 1
+                        ? "Standard Portion x$quantity"
+                        : "Standard Portion",
+                    style: TextStyle(color: Colors.grey, fontSize: 12)),
               ],
             ),
           ),
-          Text("\$${(Session.itemPrice(food) * quantity).toStringAsFixed(2)}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.black)),
+          Text("\$${(Session.itemPrice(food) * quantity).toStringAsFixed(2)}",
+              style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                  color: Colors.black)),
         ],
       ),
     );
   }
 
-  Widget _buildModernTextField({required TextEditingController controller, required String hint, required IconData icon}) {
+  Widget _buildModernTextField(
+      {required TextEditingController controller,
+      required String hint,
+      required IconData icon}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
@@ -299,31 +337,47 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
         decoration: BoxDecoration(
           color: isSelected ? Colors.red.withOpacity(0.05) : Colors.white,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: isSelected ? Colors.red : Colors.grey.shade100),
+          border:
+              Border.all(color: isSelected ? Colors.red : Colors.grey.shade100),
         ),
         child: Row(
           children: [
             Icon(icon, color: isSelected ? Colors.red : Colors.grey),
             SizedBox(width: 15),
-            Expanded(child: Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: isSelected ? Colors.red : Colors.black87))),
-            if (isSelected) Icon(Icons.check_circle, color: Colors.red, size: 20),
+            Expanded(
+                child: Text(value,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? Colors.red : Colors.black87))),
+            if (isSelected)
+              Icon(Icons.check_circle, color: Colors.red, size: 20),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPriceRow(String label, double amount, {bool isDiscount = false, bool isFree = false}) {
+  Widget _buildPriceRow(String label, double amount,
+      {bool isDiscount = false, bool isFree = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: isDiscount ? Colors.green : Colors.grey, fontWeight: FontWeight.w500)),
+          Text(label,
+              style: TextStyle(
+                  color: isDiscount ? Colors.green : Colors.grey,
+                  fontWeight: FontWeight.w500)),
           Text(
-            isFree ? "FREE" : (isDiscount ? "-\$${amount.abs().toStringAsFixed(2)}" : "\$${amount.toStringAsFixed(2)}"),
+            isFree
+                ? "FREE"
+                : (isDiscount
+                    ? "-\$${amount.abs().toStringAsFixed(2)}"
+                    : "\$${amount.toStringAsFixed(2)}"),
             style: TextStyle(
-              color: isFree ? Colors.green : (isDiscount ? Colors.green : Colors.black),
+              color: isFree
+                  ? Colors.green
+                  : (isDiscount ? Colors.green : Colors.black),
               fontWeight: FontWeight.bold,
             ),
           ),

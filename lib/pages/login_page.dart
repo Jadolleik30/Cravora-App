@@ -74,7 +74,8 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushNamedAndRemoveUntil(
               context, '/profile', (route) => false);
         } else {
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/delivery', (route) => false);
         }
       } else if (data['status'] == "unverified") {
         if (!mounted) return;

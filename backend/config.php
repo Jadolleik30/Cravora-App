@@ -40,14 +40,12 @@ function cravora_profile_fields_complete($user) {
     return trim((string)($user['name'] ?? '')) !== ''
         && trim((string)($user['phone'] ?? '')) !== ''
         && trim((string)($user['address'] ?? '')) !== ''
+        && trim((string)($user['dob'] ?? '')) !== ''
         && trim((string)($user['gender'] ?? '')) !== '';
 }
 
 function cravora_user_payload($user) {
-    $profileCompleted = (int)($user['profile_completed'] ?? 0);
-    if ($profileCompleted !== 1 && cravora_profile_fields_complete($user)) {
-        $profileCompleted = 1;
-    }
+    $profileCompleted = cravora_profile_fields_complete($user) ? 1 : 0;
 
     return [
         "id" => $user['id'] ?? null,

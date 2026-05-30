@@ -13,12 +13,12 @@ if (!$user_id || $user_id < 1 || empty($name)) {
     exit;
 }
 
-if (empty($phone) || empty($address) || empty($gender)) {
-    echo json_encode(["status" => "error", "message" => "Please complete all required profile fields"]);
+if (empty($phone) || empty($address) || empty($dob) || empty($gender)) {
+    echo json_encode(["status" => "error", "message" => "Complete your profile to continue using Cravora."]);
     exit;
 }
 
-$dobValue = $dob === '' ? null : $dob;
+$dobValue = $dob;
 $profileCompleted = 1;
 
 $stmt = $conn->prepare("UPDATE users SET name = ?, phone = ?, address = ?, dob = ?, gender = ?, profile_completed = ? WHERE id = ?");
