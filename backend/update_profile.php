@@ -13,13 +13,25 @@ if (!$user_id || $user_id < 1 || empty($name)) {
     exit;
 }
 
-$dobValue = $dob === '' ? null : $dob;
+if (empty($phone) || empty($address) || empty($gender)) {
+    echo json_encode(["status" => "error", "message" => "Please complete all required profile fields"]);
+    exit;
+}
 
-$stmt = $conn->prepare("UPDATE users SET name = ?, phone = ?, address = ?, dob = ?, gender = ? WHERE id = ?");
-$stmt->bind_param("sssssi", $name, $phone, $address, $dobValue, $gender, $user_id);
+$dobValue = $dob === '' ? null : $dob;
+$profileCompleted = 1;
+
+$stmt = $conn->prepare("UPDATE users SET name = ?, phone = ?, address = ?, dob = ?, gender = ?, profile_completed = ? WHERE id = ?");
+if (!$stmt) {
+    echo json_encode(["status" => "error", "message" => "Profile update is not ready. Please run the users table migration."]);
+    $conn->close();
+    exit;
+}
+
+$stmt->bind_param("sssssii", $name, $phone, $address, $dobValue, $gender, $profileCompleted, $user_id);
 
 if ($stmt->execute()) {
-    $fetch = $conn->prepare("SELECT id, name, email, role, phone, address, dob, gender, points, is_verified FROM users WHERE id = ?");
+    $fetch = $conn->prepare("SELECT id, name, email, role, phone, address, dob, gender, points, is_verified, profile_completed FROM users WHERE id = ?");
     $fetch->bind_param("i", $user_id);
     $fetch->execute();
     $result = $fetch->get_result();

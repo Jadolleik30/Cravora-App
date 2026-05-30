@@ -9,6 +9,9 @@ class Session {
   static String? userGender;
   static String? userRole;
   static int userPoints = 0;
+  static bool isVerified = false;
+  static bool profileCompleted = false;
+
   static Future<Map<String, dynamic>?> getUser() async {
     if (!isLoggedIn || userId == null) return null;
     return {
@@ -16,6 +19,8 @@ class Session {
       'name': userName,
       'email': userEmail,
       'role': userRole,
+      'is_verified': isVerified ? 1 : 0,
+      'profile_completed': profileCompleted ? 1 : 0,
     };
   }
   
@@ -49,6 +54,8 @@ class Session {
     userDOB = user['dob'];
     userGender = user['gender'];
     userPoints = int.tryParse(user['points']?.toString() ?? "0") ?? 0;
+    isVerified = user['is_verified'].toString() == '1' || user['is_verified'] == true;
+    profileCompleted = user['profile_completed'].toString() == '1' || user['profile_completed'] == true;
   }
 
   static void addToCart(Map<String, dynamic> item) {
@@ -87,6 +94,15 @@ class Session {
     userGender = null;
     userRole = null;
     userPoints = 0;
+    isVerified = false;
+    profileCompleted = false;
     clearCart();
+  }
+
+  static bool isProfileComplete() {
+    return (userName ?? '').trim().isNotEmpty &&
+        (userPhone ?? '').trim().isNotEmpty &&
+        (userAddress ?? '').trim().isNotEmpty &&
+        (userGender ?? '').trim().isNotEmpty;
   }
 }

@@ -57,6 +57,17 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
   }
 
   Future<void> _confirmOrder() async {
+    if (!Session.profileCompleted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Please complete your profile before placing an order."),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      Navigator.pushNamed(context, '/profile');
+      return;
+    }
+
     if (_addressController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter a delivery address"), backgroundColor: Colors.orange));
       return;
@@ -95,6 +106,9 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
 
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['message']), backgroundColor: Colors.red));
+        if (data['status'] == 'profile_incomplete') {
+          Navigator.pushNamed(context, '/profile');
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error placing order")));

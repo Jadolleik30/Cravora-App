@@ -19,7 +19,11 @@ if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
     if (password_verify($password, $user['password'])) {
         if (isset($user['is_verified']) && (int)$user['is_verified'] !== 1) {
-            echo json_encode(["status" => "error", "message" => "Please verify your email before logging in"]);
+            echo json_encode([
+                "status" => "unverified",
+                "message" => "Please verify your email first.",
+                "email" => $user['email']
+            ]);
             exit;
         }
 
@@ -36,7 +40,8 @@ if ($result->num_rows > 0) {
                 "dob" => $user['dob'],
                 "gender" => $user['gender'],
                 "points" => $user['points'],
-                "is_verified" => $user['is_verified'] ?? 1
+                "is_verified" => $user['is_verified'] ?? 1,
+                "profile_completed" => $user['profile_completed'] ?? 0
             ]
         ]);
     } else {

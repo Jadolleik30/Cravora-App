@@ -8,7 +8,39 @@ $voucher_code = trim($_POST['voucher_code'] ?? '');
 $items_json = $_POST['items'] ?? '';
 $items = json_decode($items_json, true);
 
-if (!$user_id || $user_id < 1 || empty($address) || empty($payment_method) || !is_array($items) || count($items) === 0) {
+if (!$user_id || $user_id < 1) {
+    echo json_encode(["status" => "error", "message" => "Invalid order data"]);
+    exit;
+}
+
+$profile_stmt = $conn->prepare("SELECT profile_completed FROM users WHERE id = ? LIMIT 1");
+if (!$profile_stmt) {
+    echo json_encode(["status" => "error", "message" => "Checkout is not ready. Please run the users table migration."]);
+    $conn->close();
+    exit;
+}
+
+$profile_stmt->bind_param("i", $user_id);
+$profile_stmt->execute();
+$profile_result = $profile_stmt->get_result();
+
+if (!$profile_result || $profile_result->num_rows === 0) {
+    echo json_encode(["status" => "error", "message" => "User not found"]);
+    $profile_stmt->close();
+    $conn->close();
+    exit;
+}
+
+$profile = $profile_result->fetch_assoc();
+$profile_stmt->close();
+
+if ((int)($profile['profile_completed'] ?? 0) !== 1) {
+    echo json_encode(["status" => "profile_incomplete", "message" => "Please complete your profile before placing an order."]);
+    $conn->close();
+    exit;
+}
+
+if (empty($address) || empty($payment_method) || !is_array($items) || count($items) === 0) {
     echo json_encode(["status" => "error", "message" => "Invalid order data"]);
     exit;
 }

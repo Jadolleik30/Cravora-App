@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../config.dart';
 import '../session.dart';
 import '../widgets/public_drawer.dart';
+import 'verify_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -37,9 +38,21 @@ class _LoginPageState extends State<LoginPage> {
         Session.login(data['user']);
         if (Session.userRole == 'admin') {
           Navigator.pushReplacementNamed(context, '/admin_dashboard');
+        } else if (!Session.profileCompleted) {
+          Navigator.pushReplacementNamed(context, '/profile');
         } else {
-          Navigator.pushReplacementNamed(context, '/delivery');
+          Navigator.pushReplacementNamed(context, '/home');
         }
+      } else if (data['status'] == "unverified") {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['message']), backgroundColor: Colors.orange));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => VerifyPage(
+              email: data['email'] ?? _emailController.text.trim(),
+            ),
+          ),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['message']), backgroundColor: Colors.red));
       }

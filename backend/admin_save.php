@@ -3,7 +3,7 @@ require 'config.php';
 require_admin($conn);
 
 $allowedColumns = [
-    'users' => ['name', 'email', 'role', 'password', 'phone', 'address', 'dob', 'gender', 'points', 'is_verified'],
+    'users' => ['name', 'email', 'role', 'password', 'phone', 'address', 'dob', 'gender', 'points', 'is_verified', 'profile_completed'],
     'restaurants' => ['name', 'image', 'description', 'rating', 'review_count'],
     'food_items' => ['category_id', 'name', 'description', 'price', 'image', 'rating', 'discount', 'ingredients', 'calories', 'featured_review', 'restaurant_id'],
 ];

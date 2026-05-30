@@ -19,12 +19,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    if (Session.isLoggedIn) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, '/delivery');
-      });
-    }
-    _fetchData();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!Session.isProfileComplete()) {
+        Navigator.pushReplacementNamed(context, '/profile');
+      }
+    });
   }
 
   Future<void> _fetchData() async {

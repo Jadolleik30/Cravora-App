@@ -459,6 +459,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `points` int DEFAULT '0',
   `verification_code` varchar(10) DEFAULT NULL,
   `is_verified` tinyint(1) DEFAULT '1',
+  `profile_completed` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4  ;
@@ -467,15 +468,15 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `address`, `profile_pic`, `created_at`, `dob`, `gender`, `role`, `points`, `verification_code`, `is_verified`) VALUES
-(1, 'Jad Olleik', 'jad.olleik@example.com', '$2y$10$wZaj84ETSXoLtSRyHgRS9.P.3KhEaakfyhheLL4hvq3o/Lne41jfu', '+961 70 123 456', 'Beirut, Lebanon', NULL, '2026-05-09 21:02:32', '1985-05-08', 'Male', 'user', 10, NULL, 1),
-(2, 'Cravora Admin', 'admin@cravora.com', '$2y$10$wZaj84ETSXoLtSRyHgRS9.P.3KhEaakfyhheLL4hvq3o/Lne41jfu', NULL, NULL, NULL, '2026-05-10 07:50:38', NULL, NULL, 'admin', 0, NULL, 1),
-(3, 'Ali Hassan', 'ali.hassan@example.lb', '$2y$10$xK4HO6gUGq3IEGZgTcIk9u0MVXLZs31cFQIstebNvbZMtIriBka5S', '+961 70 123 456', 'Beirut, Hamra, Main Street', NULL, '2026-05-15 18:03:15', '1995-05-15', 'Male', 'user', 0, NULL, 1),
-(4, 'Laila Mansour', 'laila.mansour@example.lb', '$2y$10$Z7vT2483KBiVPYde.C1I7eP24QcxZIeHTDhGxbfM6K.d70LyQ9T5e', '+961 71 234 567', 'Saida, El Koulye, Near University', NULL, '2026-05-15 18:03:15', '1998-08-20', 'Female', 'user', 0, NULL, 1),
-(5, 'Rami Chehab', 'rami.chehab@example.lb', '$2y$10$Msqto2mvwwRSgyvPpaIhLO4IjKYkvIUj9WVbhpqc97S0RIrVnQ3jW', '+961 06 345 678', 'Tripoli, Mina, Sea Road', NULL, '2026-05-15 18:03:15', '1992-03-10', 'Male', 'user', 0, NULL, 1),
-(6, 'Maya Khoury', 'maya.khoury@example.lb', '$2y$10$4qZF.Hw8aBgKGyLfsIFzCeR9oLhoSzmUu2XAuI/LUm1wmqqaPiaay', '+961 09 456 789', 'Jounieh, Kaslik, Old Souk', NULL, '2026-05-15 18:03:15', '1996-11-25', 'Female', 'user', 0, NULL, 1),
-(7, 'Hassan Zein', 'hassan.zein@example.lb', '$2y$10$4iPpnJGdrJYynJj7SblHMuT07hbXbGCVOrpR53cAsEjnaBy2HXYAy', '+961 07 567 890', 'Tyre, Corniche, Al-Jabal Street', NULL, '2026-05-15 18:03:15', '1990-07-05', 'Male', 'user', 0, NULL, 1),
-(8, 'Nour Haddad', 'nour.haddad@example.lb', '$2y$10$nCh4MDfXEf3z.Ju6QnzStusc8EpX40fR.bWHYHrZt/zYF2Zg5fy3.', '+961 08 678 901', 'Zahle, Berdawni, Near Cafes', NULL, '2026-05-15 18:03:15', '1994-01-30', 'Female', 'user', 0, NULL, 1);
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `address`, `profile_pic`, `created_at`, `dob`, `gender`, `role`, `points`, `verification_code`, `is_verified`, `profile_completed`) VALUES
+(1, 'Jad Olleik', 'jad.olleik@example.com', '$2y$10$wZaj84ETSXoLtSRyHgRS9.P.3KhEaakfyhheLL4hvq3o/Lne41jfu', '+961 70 123 456', 'Beirut, Lebanon', NULL, '2026-05-09 21:02:32', '1985-05-08', 'Male', 'user', 10, NULL, 1, 1),
+(2, 'Cravora Admin', 'admin@cravora.com', '$2y$10$wZaj84ETSXoLtSRyHgRS9.P.3KhEaakfyhheLL4hvq3o/Lne41jfu', NULL, NULL, NULL, '2026-05-10 07:50:38', NULL, NULL, 'admin', 0, NULL, 1, 1),
+(3, 'Ali Hassan', 'ali.hassan@example.lb', '$2y$10$xK4HO6gUGq3IEGZgTcIk9u0MVXLZs31cFQIstebNvbZMtIriBka5S', '+961 70 123 456', 'Beirut, Hamra, Main Street', NULL, '2026-05-15 18:03:15', '1995-05-15', 'Male', 'user', 0, NULL, 1, 1),
+(4, 'Laila Mansour', 'laila.mansour@example.lb', '$2y$10$Z7vT2483KBiVPYde.C1I7eP24QcxZIeHTDhGxbfM6K.d70LyQ9T5e', '+961 71 234 567', 'Saida, El Koulye, Near University', NULL, '2026-05-15 18:03:15', '1998-08-20', 'Female', 'user', 0, NULL, 1, 1),
+(5, 'Rami Chehab', 'rami.chehab@example.lb', '$2y$10$Msqto2mvwwRSgyvPpaIhLO4IjKYkvIUj9WVbhpqc97S0RIrVnQ3jW', '+961 06 345 678', 'Tripoli, Mina, Sea Road', NULL, '2026-05-15 18:03:15', '1992-03-10', 'Male', 'user', 0, NULL, 1, 1),
+(6, 'Maya Khoury', 'maya.khoury@example.lb', '$2y$10$4qZF.Hw8aBgKGyLfsIFzCeR9oLhoSzmUu2XAuI/LUm1wmqqaPiaay', '+961 09 456 789', 'Jounieh, Kaslik, Old Souk', NULL, '2026-05-15 18:03:15', '1996-11-25', 'Female', 'user', 0, NULL, 1, 1),
+(7, 'Hassan Zein', 'hassan.zein@example.lb', '$2y$10$4iPpnJGdrJYynJj7SblHMuT07hbXbGCVOrpR53cAsEjnaBy2HXYAy', '+961 07 567 890', 'Tyre, Corniche, Al-Jabal Street', NULL, '2026-05-15 18:03:15', '1990-07-05', 'Male', 'user', 0, NULL, 1, 1),
+(8, 'Nour Haddad', 'nour.haddad@example.lb', '$2y$10$nCh4MDfXEf3z.Ju6QnzStusc8EpX40fR.bWHYHrZt/zYF2Zg5fy3.', '+961 08 678 901', 'Zahle, Berdawni, Near Cafes', NULL, '2026-05-15 18:03:15', '1994-01-30', 'Female', 'user', 0, NULL, 1, 1);
 
 -- --------------------------------------------------------
 

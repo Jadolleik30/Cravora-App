@@ -30,10 +30,10 @@ class _SignupPageState extends State<SignupPage> {
     setState(() => _isLoading = true);
     try {
       final response = await http.post(
-        Uri.parse(Config.baseUrl + "signup.php"),
+        Uri.parse(Config.baseUrl + "register.php"),
         body: {
-          "name": _nameController.text,
-          "email": _emailController.text,
+          "name": _nameController.text.trim(),
+          "email": _emailController.text.trim(),
           "password": _passwordController.text,
         },
       );
@@ -45,8 +45,7 @@ class _SignupPageState extends State<SignupPage> {
           context,
           MaterialPageRoute(
             builder: (_) => VerifyPage(
-              email: _emailController.text,
-              code: data['code'].toString(),
+              email: data['email'] ?? _emailController.text.trim(),
             ),
           ),
         );
@@ -211,4 +210,3 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 }
-
