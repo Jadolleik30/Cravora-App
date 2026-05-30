@@ -22,7 +22,8 @@ class _RewardsPageState extends State<RewardsPage> {
 
   Future<void> _fetchVouchers() async {
     try {
-      final response = await http.get(Uri.parse(Config.baseUrl + "get_vouchers.php"));
+      final response =
+          await http.get(Uri.parse(Config.baseUrl + "get_vouchers.php"));
       if (mounted) {
         setState(() {
           vouchers = json.decode(response.body);
@@ -39,8 +40,9 @@ class _RewardsPageState extends State<RewardsPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Cravora Rewards", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
-        backgroundColor: Colors.orange.shade700,
+        title: Text("Cravora Rewards",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+        backgroundColor: Colors.red.shade700,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
       ),
@@ -56,40 +58,59 @@ class _RewardsPageState extends State<RewardsPage> {
               padding: EdgeInsets.symmetric(vertical: 40, horizontal: 30),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.black, Colors.grey.shade900],
+                  colors: [Colors.red.shade900, Colors.red.shade600],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(30),
-                boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 20, offset: Offset(0, 10))],
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 20,
+                      offset: Offset(0, 10))
+                ],
               ),
               child: Column(
                 children: [
                   Container(
                     padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(color: Colors.amber.withOpacity(0.1), shape: BoxShape.circle),
-                    child: Icon(Icons.stars_rounded, color: Colors.amber, size: 50),
+                    decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.16),
+                        shape: BoxShape.circle),
+                    child: Icon(Icons.stars_rounded,
+                        color: Colors.white, size: 50),
                   ),
                   SizedBox(height: 20),
                   Text(
                     "${Session.userPoints}",
-                    style: TextStyle(color: Colors.white, fontSize: 56, fontWeight: FontWeight.w900, letterSpacing: -2),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 56,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -2),
                   ),
                   Text(
                     "TOTAL CRAVORA POINTS",
-                    style: TextStyle(color: Colors.amber, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2),
+                    style: TextStyle(
+                        color: Colors.red.shade50,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 2),
                   ),
                   SizedBox(height: 30),
                   Container(
                     width: double.infinity,
                     height: 8,
-                    decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(10)),
+                    decoration: BoxDecoration(
+                        color: Colors.white10,
+                        borderRadius: BorderRadius.circular(10)),
                     child: FractionallySizedBox(
                       alignment: Alignment.centerLeft,
                       widthFactor: (Session.userPoints % 500) / 500,
                       child: Container(
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [Colors.amber, Colors.orange]),
+                          gradient: LinearGradient(
+                              colors: [Colors.white, Colors.red.shade100]),
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -112,13 +133,16 @@ class _RewardsPageState extends State<RewardsPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Active Vouchers", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+                      Text("Active Vouchers",
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.w900)),
                       Icon(Icons.local_offer_outlined, color: Colors.red),
                     ],
                   ),
                   SizedBox(height: 20),
                   _isLoading
-                      ? Center(child: CircularProgressIndicator(color: Colors.red))
+                      ? Center(
+                          child: CircularProgressIndicator(color: Colors.red))
                       : vouchers.isEmpty
                           ? _buildEmptyVouchers()
                           : ListView.builder(
@@ -130,7 +154,6 @@ class _RewardsPageState extends State<RewardsPage> {
                                 return _buildVoucherCard(v);
                               },
                             ),
-                  
                   SizedBox(height: 30),
                   _buildLoyaltyPerksSection(),
                   SizedBox(height: 40),
@@ -146,12 +169,16 @@ class _RewardsPageState extends State<RewardsPage> {
   Widget _buildEmptyVouchers() {
     return Container(
       padding: EdgeInsets.all(30),
-      decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+          color: Colors.grey.shade50, borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
-          Icon(Icons.confirmation_number_outlined, size: 50, color: Colors.grey.shade300),
+          Icon(Icons.confirmation_number_outlined,
+              size: 50, color: Colors.grey.shade300),
           SizedBox(height: 15),
-          Text("No vouchers yet", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+          Text("No vouchers yet",
+              style:
+                  TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -159,7 +186,7 @@ class _RewardsPageState extends State<RewardsPage> {
 
   Widget _buildVoucherCard(dynamic v) {
     bool isPercentage = v['discount_type'] == 'percentage';
-    
+
     return Container(
       margin: EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
@@ -179,10 +206,19 @@ class _RewardsPageState extends State<RewardsPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    isPercentage ? "${v['discount_value']}%" : "\$${v['discount_value']}",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 20),
+                    isPercentage
+                        ? "${v['discount_value']}%"
+                        : "\$${v['discount_value']}",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 20),
                   ),
-                  Text("OFF", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                  Text("OFF",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -192,11 +228,20 @@ class _RewardsPageState extends State<RewardsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(v['code'], style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1)),
+                    Text(v['code'],
+                        style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 18,
+                            letterSpacing: 1)),
                     SizedBox(height: 4),
-                    Text("Min. Order: \$${v['min_order_value']}", style: TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
+                    Text("Min. Order: \$${v['min_order_value']}",
+                        style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold)),
                     SizedBox(height: 2),
-                    Text("Expires: ${v['expiry_date']}", style: TextStyle(color: Colors.grey, fontSize: 10)),
+                    Text("Expires: ${v['expiry_date']}",
+                        style: TextStyle(color: Colors.grey, fontSize: 10)),
                   ],
                 ),
               ),
@@ -208,10 +253,12 @@ class _RewardsPageState extends State<RewardsPage> {
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Code ${v['code']} copied!", style: TextStyle(fontWeight: FontWeight.bold)),
+                      content: Text("Code ${v['code']} copied!",
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                       backgroundColor: Colors.black,
                       behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                   );
                 },
@@ -227,24 +274,31 @@ class _RewardsPageState extends State<RewardsPage> {
     return Container(
       padding: EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: Colors.amber.shade50,
+        color: Colors.red.shade50,
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.amber.shade100),
+        border: Border.all(color: Colors.red.shade100),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.auto_awesome, color: Colors.amber.shade800, size: 20),
+              Icon(Icons.auto_awesome, color: Colors.red.shade700, size: 20),
               SizedBox(width: 10),
-              Text("Member Perks", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Colors.amber.shade900)),
+              Text("Member Perks",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18,
+                      color: Colors.red.shade800)),
             ],
           ),
           SizedBox(height: 20),
-          _buildPerkItem(Icons.paid_outlined, "Earn 1 point for every \$1 spent"),
-          _buildPerkItem(Icons.card_giftcard, "Convert 500 points to \$5 discount"),
-          _buildPerkItem(Icons.flash_on_outlined, "Priority delivery for Gold members"),
+          _buildPerkItem(
+              Icons.paid_outlined, "Earn 1 point for every \$1 spent"),
+          _buildPerkItem(
+              Icons.card_giftcard, "Convert 500 points to \$5 discount"),
+          _buildPerkItem(
+              Icons.flash_on_outlined, "Priority delivery for Gold members"),
         ],
       ),
     );
@@ -255,9 +309,14 @@ class _RewardsPageState extends State<RewardsPage> {
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: Colors.amber.shade800),
+          Icon(icon, size: 16, color: Colors.red.shade700),
           SizedBox(width: 12),
-          Expanded(child: Text(text, style: TextStyle(color: Colors.amber.shade900, fontSize: 13, fontWeight: FontWeight.w500))),
+          Expanded(
+              child: Text(text,
+                  style: TextStyle(
+                      color: Colors.red.shade800,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500))),
         ],
       ),
     );

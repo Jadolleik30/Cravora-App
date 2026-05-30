@@ -1,24 +1,16 @@
 <?php
 
+$localConfigPath = __DIR__ . '/smtp_config.local.php';
+if (file_exists($localConfigPath)) {
+    return require $localConfigPath;
+}
+
 return [
-    // Gmail SMTP server
-    "host" => "smtp.gmail.com",
-
-    // Your Gmail address
-    "username" => "jadolleikonfire@gmail.com",
-
-    // Gmail App Password, not your normal Gmail password
-    "password" => "zqqt oyrv tlgc phpe",
-
-    // Gmail TLS port
-    "port" => 587,
-
-    // Use tls for Gmail
-    "secure" => "tls",
-
-    // Sender email shown to customer
-    "from_email" => "jadolleikonfire@gmail.com",
-
-    // Sender name shown to customer
-    "from_name" => "Cravora",
+    "host" => getenv("CRAVORA_SMTP_HOST") ?: "",
+    "username" => getenv("CRAVORA_SMTP_USERNAME") ?: "",
+    "password" => getenv("CRAVORA_SMTP_PASSWORD") ?: "",
+    "port" => (int)(getenv("CRAVORA_SMTP_PORT") ?: 587),
+    "secure" => getenv("CRAVORA_SMTP_SECURE") ?: "tls",
+    "from_email" => getenv("CRAVORA_SMTP_FROM_EMAIL") ?: "",
+    "from_name" => getenv("CRAVORA_SMTP_FROM_NAME") ?: "Cravora",
 ];

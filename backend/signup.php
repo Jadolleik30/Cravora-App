@@ -72,13 +72,15 @@ if ($stmt->execute()) {
         echo json_encode([
             "status" => "success",
             "message" => "Account created. Please check your email for the verification code.",
-            "email" => $email
+            "email" => $email,
+            "email_sent" => true
         ]);
     } else {
         echo json_encode([
-            "status" => "error",
+            "status" => "success",
             "message" => "Account created, but the verification email could not be sent. Configure SMTP and use Resend Code.",
-            "email" => $email
+            "email" => $email,
+            "email_sent" => false
         ]);
     }
 

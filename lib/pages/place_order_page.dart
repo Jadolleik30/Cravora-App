@@ -66,7 +66,7 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Complete your profile to continue using Cravora."),
-          backgroundColor: Colors.orange,
+          backgroundColor: Colors.red,
         ),
       );
       Navigator.pushNamed(context, '/profile');
@@ -76,7 +76,7 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
     if (_addressController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Please enter a delivery address"),
-          backgroundColor: Colors.orange));
+          backgroundColor: Colors.red));
       return;
     }
 
@@ -136,7 +136,7 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
       appBar: AppBar(
         title: Text("Checkout",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
-        backgroundColor: Colors.orange.shade700,
+        backgroundColor: Colors.red.shade700,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [

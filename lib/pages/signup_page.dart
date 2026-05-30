@@ -22,8 +22,12 @@ class _SignupPageState extends State<SignupPage> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    if (_nameController.text.isEmpty || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill all fields"), backgroundColor: Colors.orange));
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Please fill all fields"),
+          backgroundColor: Colors.red));
       return;
     }
 
@@ -40,7 +44,6 @@ class _SignupPageState extends State<SignupPage> {
 
       final data = json.decode(response.body);
       if (data['status'] == 'success') {
-
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -49,12 +52,13 @@ class _SignupPageState extends State<SignupPage> {
             ),
           ),
         );
-
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['message']), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(data['message']), backgroundColor: Colors.red));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Connection Error"), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Connection Error"), backgroundColor: Colors.red));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -76,87 +80,103 @@ class _SignupPageState extends State<SignupPage> {
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: Form(
             key: _formKey,
-            child: Column(            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(20)),
-                child: Icon(Icons.person_add_outlined, color: Colors.red, size: 40),
-              ),
-              SizedBox(height: 30),
-              Text(
-                "Create Account",
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.black),
-              ),
-              Text(
-                "Start your premium food delivery experience",
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
-              ),
-              SizedBox(height: 40),
-              
-              _buildModernInput(
-                controller: _nameController,
-                label: "Full Name",
-                hint: "Jad Olleik",
-                icon: Icons.person_outline,
-              ),
-              SizedBox(height: 20),
-              
-              _buildModernInput(
-                controller: _emailController,
-                label: "Email Address",
-                hint: "you@example.com",
-                icon: Icons.alternate_email,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              SizedBox(height: 20),
-              
-              _buildModernInput(
-                controller: _passwordController,
-                label: "Create Password",
-                hint: "••••••••",
-                icon: Icons.lock_outline,
-                obscure: _obscurePassword,
-                suffix: IconButton(
-                  icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
-                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 10),
+                Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Icon(Icons.person_add_outlined,
+                      color: Colors.red, size: 40),
                 ),
-              ),
-              
-              SizedBox(height: 40),
-              
-              _isLoading
-                  ? Center(child: CircularProgressIndicator(color: Colors.red))
-                  : ElevatedButton(
-                      onPressed: _signup,
-                      child: Text("Sign Up", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        minimumSize: Size(double.infinity, 60),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        elevation: 0,
-                      ),
-                    ),
-              
-              SizedBox(height: 20),
-              
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Already have an account?", style: TextStyle(color: Colors.grey.shade600)),
-                  TextButton(
-                    onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
-                    child: Text("Login Now", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                SizedBox(height: 30),
+                Text(
+                  "Create Account",
+                  style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black),
+                ),
+                Text(
+                  "Start your premium food delivery experience",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w500),
+                ),
+                SizedBox(height: 40),
+                _buildModernInput(
+                  controller: _nameController,
+                  label: "Full Name",
+                  hint: "Jad Olleik",
+                  icon: Icons.person_outline,
+                ),
+                SizedBox(height: 20),
+                _buildModernInput(
+                  controller: _emailController,
+                  label: "Email Address",
+                  hint: "you@example.com",
+                  icon: Icons.alternate_email,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: 20),
+                _buildModernInput(
+                  controller: _passwordController,
+                  label: "Create Password",
+                  hint: "********",
+                  icon: Icons.lock_outline,
+                  obscure: _obscurePassword,
+                  suffix: IconButton(
+                    icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
-                ],
-              ),
-              SizedBox(height: 50),
-            ],
+                ),
+                SizedBox(height: 40),
+                _isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(color: Colors.red))
+                    : ElevatedButton(
+                        onPressed: _signup,
+                        child: Text("Sign Up",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          minimumSize: Size(double.infinity, 60),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          elevation: 0,
+                        ),
+                      ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Already have an account?",
+                        style: TextStyle(color: Colors.grey.shade600)),
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.pushReplacementNamed(context, '/login'),
+                      child: Text("Login Now",
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 50),
+              ],
+            ),
           ),
         ),
-       ),
       ),
     );
   }
@@ -173,7 +193,11 @@ class _SignupPageState extends State<SignupPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),
+        Text(label,
+            style: TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+                fontSize: 14)),
         SizedBox(height: 10),
         TextFormField(
           controller: controller,
@@ -181,7 +205,6 @@ class _SignupPageState extends State<SignupPage> {
           keyboardType: keyboardType,
           validator: (value) {
             if (label == "Email Address") {
-
               if (value == null || value.trim().isEmpty) {
                 return "Email is required";
               }

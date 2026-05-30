@@ -152,27 +152,40 @@ class _VerifyPageState extends State<VerifyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Verify Email"),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(20),
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 40),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(Icons.mark_email_read_outlined,
+                  color: Colors.red, size: 42),
+            ),
+            SizedBox(height: 30),
             Text(
               "Verification Code",
               style: TextStyle(
                 fontSize: 28,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
               ),
             ),
             SizedBox(height: 10),
             Text(
               "Enter the 6-digit code sent to ${widget.email}",
-              textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.grey,
+                color: Colors.grey.shade600,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
               ),
             ),
             SizedBox(height: 30),
@@ -182,24 +195,47 @@ class _VerifyPageState extends State<VerifyPage> {
               maxLength: 6,
               decoration: InputDecoration(
                 labelText: "Enter Code",
-                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.password_outlined, color: Colors.red),
+                filled: true,
+                fillColor: Colors.grey.shade50,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: Colors.red, width: 2),
+                ),
                 counterText: "",
               ),
             ),
             SizedBox(height: 25),
             _isLoading
-                ? CircularProgressIndicator()
+                ? Center(child: CircularProgressIndicator(color: Colors.red))
                 : ElevatedButton(
                     onPressed: verifyEmail,
                     child: Text("Verify"),
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(double.infinity, 55),
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
                     ),
                   ),
             SizedBox(height: 12),
-            TextButton(
-              onPressed: _isResending ? null : resendCode,
-              child: Text(_isResending ? "Sending..." : "Resend Code"),
+            Center(
+              child: TextButton(
+                onPressed: _isResending ? null : resendCode,
+                child: Text(
+                  _isResending ? "Sending..." : "Resend Code",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

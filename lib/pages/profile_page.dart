@@ -39,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("Complete your profile to continue using Cravora."),
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.red,
       ),
     );
   }
@@ -49,7 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Complete your profile to continue using Cravora."),
-          backgroundColor: Colors.orange,
+          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -150,7 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
               fontWeight: FontWeight.w900,
             ),
           ),
-          backgroundColor: Colors.orange,
+          backgroundColor: Colors.red.shade700,
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
           automaticallyImplyLeading: canLeave,
@@ -168,12 +168,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
-                  color: Colors.orangeAccent.shade100,
+                  color: Colors.red.shade50,
                   child: Text(
                     "Complete your profile to continue using Cravora.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.orange.shade900,
+                      color: Colors.red.shade800,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -243,7 +243,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.amber.shade100,
+                        color: Colors.red.shade50,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -251,14 +251,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         children: [
                           Icon(
                             Icons.stars,
-                            color: Colors.amber.shade800,
+                            color: Colors.red.shade700,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             "${Session.userPoints} Cravora Points",
                             style: TextStyle(
-                              color: Colors.amber.shade900,
+                              color: Colors.red.shade800,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Complete your profile to continue using Cravora."),
-          backgroundColor: Colors.orange,
+          backgroundColor: Colors.red,
         ),
       );
       Navigator.pushNamed(context, '/profile');

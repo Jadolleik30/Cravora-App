@@ -34,23 +34,30 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
 
   Future<void> _fetchRestaurantDetails() async {
     try {
-      final response = await http.get(Uri.parse(Config.baseUrl + "get_restaurants.php"));
+      final response =
+          await http.get(Uri.parse(Config.baseUrl + "get_restaurants.php"));
       List restaurants = json.decode(response.body);
       setState(() {
-        _currentRestaurant = restaurants.firstWhere((r) => r['id'].toString() == _filterRestaurantId.toString());
+        _currentRestaurant = restaurants.firstWhere(
+            (r) => r['id'].toString() == _filterRestaurantId.toString());
       });
     } catch (e) {}
   }
 
   Future<void> _fetchFoods() async {
     try {
-      final response = await http.get(Uri.parse(Config.baseUrl + "get_food.php"));
+      final response =
+          await http.get(Uri.parse(Config.baseUrl + "get_food.php"));
       List allFoods = json.decode(response.body);
-      
+
       setState(() {
         foods = allFoods;
         if (_filterRestaurantId != null) {
-          filteredFoods = foods.where((f) => f['restaurant_id'].toString() == _filterRestaurantId.toString()).toList();
+          filteredFoods = foods
+              .where((f) =>
+                  f['restaurant_id'].toString() ==
+                  _filterRestaurantId.toString())
+              .toList();
         } else {
           filteredFoods = foods;
         }
@@ -63,28 +70,32 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
 
   void _filterFoods(String query) {
     setState(() {
-      filteredFoods = foods
-          .where((food) {
-            final matchesSearch = food['name'].toString().toLowerCase().contains(query.toLowerCase());
-            final matchesRestaurant = _filterRestaurantId == null || food['restaurant_id'].toString() == _filterRestaurantId.toString();
-            return matchesSearch && matchesRestaurant;
-          })
-          .toList();
+      filteredFoods = foods.where((food) {
+        final matchesSearch =
+            food['name'].toString().toLowerCase().contains(query.toLowerCase());
+        final matchesRestaurant = _filterRestaurantId == null ||
+            food['restaurant_id'].toString() == _filterRestaurantId.toString();
+        return matchesSearch && matchesRestaurant;
+      }).toList();
     });
   }
 
   void _quickOrder(Map food, String imageUrl) {
     int foodRestId = int.tryParse(food['restaurant_id'].toString()) ?? 0;
-    
-    if (Session.activeRestaurantId != null && Session.activeRestaurantId != foodRestId) {
+
+    if (Session.activeRestaurantId != null &&
+        Session.activeRestaurantId != foodRestId) {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text("Switch Restaurant?"),
-          content: Text("You have items from ${Session.activeRestaurantName}. Clear cart to start an order with ${food['restaurant_name']}?"),
+          content: Text(
+              "You have items from ${Session.activeRestaurantName}. Clear cart to start an order with ${food['restaurant_name']}?"),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Cancel")),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx), child: Text("Cancel")),
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -92,10 +103,13 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
                   Session.addToCart({...food, 'image': imageUrl});
                 });
                 Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("New order started!"), backgroundColor: Colors.green));
-              }, 
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("New order started!"),
+                    backgroundColor: Colors.green));
+              },
               child: Text("Clear & Add"),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, foregroundColor: Colors.white),
             ),
           ],
         ),
@@ -129,12 +143,20 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(child: Container(width: 50, height: 5, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(10)))),
+            Center(
+                child: Container(
+                    width: 50,
+                    height: 5,
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(10)))),
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Your Selection", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
+                Text("Your Selection",
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
                 TextButton.icon(
                   icon: Icon(Icons.delete_outline, color: Colors.red),
                   label: Text("Clear", style: TextStyle(color: Colors.red)),
@@ -145,7 +167,9 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
                 ),
               ],
             ),
-            Text("From ${Session.activeRestaurantName}", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+            Text("From ${Session.activeRestaurantName}",
+                style:
+                    TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
@@ -156,15 +180,27 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
                   return Container(
                     margin: EdgeInsets.only(bottom: 10),
                     padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(15)),
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(15)),
                     child: ListTile(
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.network(item['image'], width: 60, height: 60, fit: BoxFit.cover),
+                        child: Image.network(item['image'],
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                                _buildImageFallback(iconSize: 24)),
                       ),
-                      title: Text(item['name'], style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text("${Session.itemQuantity(item)} x \$${Session.itemPrice(item).toStringAsFixed(2)}"),
-                      trailing: IconButton(icon: Icon(Icons.remove_circle_outline, color: Colors.grey), onPressed: () {}),
+                      title: Text(item['name'],
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text(
+                          "${Session.itemQuantity(item)} x \$${Session.itemPrice(item).toStringAsFixed(2)}"),
+                      trailing: IconButton(
+                          icon: Icon(Icons.remove_circle_outline,
+                              color: Colors.grey),
+                          onPressed: () {}),
                     ),
                   );
                 },
@@ -174,8 +210,13 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Subtotal", style: TextStyle(fontSize: 18, color: Colors.grey)),
-                Text("\$${Session.cartTotal.toStringAsFixed(2)}", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.red)),
+                Text("Subtotal",
+                    style: TextStyle(fontSize: 18, color: Colors.grey)),
+                Text("\$${Session.cartTotal.toStringAsFixed(2)}",
+                    style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.red)),
               ],
             ),
             SizedBox(height: 20),
@@ -187,12 +228,14 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
                   'total_price': Session.cartTotal,
                 });
               },
-              child: Text("Checkout Now", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              child: Text("Checkout Now",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
                 minimumSize: Size(double.infinity, 60),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
                 elevation: 0,
               ),
             ),
@@ -225,8 +268,12 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Discover", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 28)),
-        backgroundColor: Colors.orange.shade700,
+        title: Text("Browse Menu",
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 24)),
+        backgroundColor: Colors.red.shade700,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
@@ -235,113 +282,141 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
         ],
       ),
       drawer: UserDrawer(),
-      floatingActionButton: Session.cartItems.isEmpty 
-        ? null 
-        : Container(
-            margin: EdgeInsets.only(bottom: 20),
-            child: FloatingActionButton.extended(
-              onPressed: _showCartBottomSheet,
-              backgroundColor: Colors.black,
-              elevation: 10,
-              icon: Icon(Icons.shopping_bag, color: Colors.white),
-              label: Text("${Session.cartItemCount} items  |  \$${Session.cartTotal.toStringAsFixed(2)}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      floatingActionButton: Session.cartItems.isEmpty
+          ? null
+          : Container(
+              margin: EdgeInsets.only(bottom: 20),
+              child: FloatingActionButton.extended(
+                onPressed: _showCartBottomSheet,
+                backgroundColor: Colors.black,
+                elevation: 10,
+                icon: Icon(Icons.shopping_bag, color: Colors.white),
+                label: Text(
+                    "${Session.cartItemCount} items  |  \$${Session.cartTotal.toStringAsFixed(2)}",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
             ),
-          ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: _isLoading 
-        ? Center(child: CircularProgressIndicator(color: Colors.red))
-        : Column(
-            children: [
-              if (_currentRestaurant != null)
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  height: 180,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    image: DecorationImage(
-                      image: NetworkImage(_currentRestaurant!['image']),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator(color: Colors.red))
+          : Column(
+              children: [
+                if (_currentRestaurant != null)
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    height: 180,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      image: DecorationImage(
+                        image: NetworkImage(_currentRestaurant!['image']),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                            Colors.black.withOpacity(0.3), BlendMode.darken),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(_currentRestaurant!['name'],
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900)),
+                        SizedBox(height: 5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.star, color: Colors.amber, size: 20),
+                            Text(
+                                " ${_currentRestaurant!['rating']}  |  Verified Restaurant",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        TextButton(
+                          onPressed: () => setState(() {
+                            _filterRestaurantId = null;
+                            _currentRestaurant = null;
+                            filteredFoods = foods;
+                          }),
+                          child: Text("Switch Restaurant",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  decoration: TextDecoration.underline)),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(_currentRestaurant!['name'], style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w900)),
-                      SizedBox(height: 5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.star, color: Colors.amber, size: 20),
-                          Text(" ${_currentRestaurant!['rating']}  •  Verified Restaurant", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      TextButton(
-                        onPressed: () => setState(() {
-                          _filterRestaurantId = null;
-                          _currentRestaurant = null;
-                          filteredFoods = foods;
-                        }),
-                        child: Text("Switch Restaurant", style: TextStyle(color: Colors.white, decoration: TextDecoration.underline)),
-                      ),
-                    ],
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: _filterFoods,
+                    decoration: InputDecoration(
+                      hintText: "Search in this menu...",
+                      prefixIcon: Icon(Icons.search, color: Colors.red),
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none),
+                      contentPadding: EdgeInsets.symmetric(vertical: 15),
+                    ),
                   ),
                 ),
-              
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: _filterFoods,
-                  decoration: InputDecoration(
-                    hintText: "Search in this menu...",
-                    prefixIcon: Icon(Icons.search, color: Colors.red),
-                    filled: true,
-                    fillColor: Colors.grey.shade100,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
-                    contentPadding: EdgeInsets.symmetric(vertical: 15),
-                  ),
-                ),
-              ),
+                Expanded(
+                  child: GridView.builder(
+                    padding: EdgeInsets.only(
+                        left: 20, right: 20, top: 10, bottom: 100),
+                    physics: BouncingScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.72,
+                      crossAxisSpacing: 15,
+                      mainAxisSpacing: 15,
+                    ),
+                    itemCount: filteredFoods.length,
+                    itemBuilder: (context, index) {
+                      final food = filteredFoods[index];
+                      String imageUrl = food['image'] != null &&
+                              food['image'].toString().isNotEmpty
+                          ? food['image']
+                          : "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3";
 
-              Expanded(
-                child: GridView.builder(
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 100),
-                  physics: BouncingScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.72,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                  ),
-                  itemCount: filteredFoods.length,
-                  itemBuilder: (context, index) {
-                    final food = filteredFoods[index];
-                    String imageUrl = food['image'] != null && food['image'].toString().isNotEmpty 
-                        ? food['image'] 
-                        : "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3";
-                    
-                    double price = double.tryParse(food['price'].toString()) ?? 0;
-                    double? disc = double.tryParse(food['discount']?.toString() ?? "");
-                    bool hasDiscount = disc != null && disc > 0 && disc < price;
+                      double price =
+                          double.tryParse(food['price'].toString()) ?? 0;
+                      double? disc =
+                          double.tryParse(food['discount']?.toString() ?? "");
+                      bool hasDiscount =
+                          disc != null && disc > 0 && disc < price;
 
-                    return _buildModernFoodCard(food, imageUrl, hasDiscount, disc);
-                  },
+                      return _buildModernFoodCard(
+                          food, imageUrl, hasDiscount, disc);
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
     );
   }
 
-  Widget _buildModernFoodCard(dynamic food, String imageUrl, bool hasDiscount, double? disc) {
+  Widget _buildModernFoodCard(
+      dynamic food, String imageUrl, bool hasDiscount, double? disc) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 20, offset: Offset(0, 10))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 20,
+              offset: Offset(0, 10))
+        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(25),
@@ -353,7 +428,11 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
               Expanded(
                 child: Stack(
                   children: [
-                    Image.network(imageUrl, fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+                    Image.network(imageUrl,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        errorBuilder: (_, __, ___) => _buildImageFallback()),
                     Positioned(
                       top: 10,
                       right: 10,
@@ -371,9 +450,16 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
                         top: 10,
                         left: 10,
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(10)),
-                          child: Text("SALE", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Text("SALE",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold)),
                         ),
                       ),
                   ],
@@ -384,12 +470,20 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(food['name'], style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(food['name'],
+                        style: TextStyle(
+                            fontWeight: FontWeight.w900, fontSize: 15),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
                     SizedBox(height: 4),
                     Row(
                       children: [
                         Icon(Icons.star, color: Colors.amber, size: 14),
-                        Text(" ${food['rating'] ?? '4.8'}", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey.shade600)),
+                        Text(" ${food['rating'] ?? '4.8'}",
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade600)),
                       ],
                     ),
                     SizedBox(height: 8),
@@ -400,14 +494,22 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (hasDiscount)
-                              Text("\$${food['price']}", style: TextStyle(color: Colors.grey, fontSize: 11, decoration: TextDecoration.lineThrough)),
+                              Text("\$${food['price']}",
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 11,
+                                      decoration: TextDecoration.lineThrough)),
                             Text(
                               "\$${hasDiscount ? disc : food['price']}",
-                              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900, fontSize: 18),
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 18),
                             ),
                           ],
                         ),
-                        Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey.shade300),
+                        Icon(Icons.arrow_forward_ios,
+                            size: 14, color: Colors.grey.shade300),
                       ],
                     ),
                   ],
@@ -416,6 +518,18 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildImageFallback({double iconSize = 42}) {
+    return Container(
+      color: Colors.red.shade50,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.restaurant_menu_outlined,
+        color: Colors.red.shade200,
+        size: iconSize,
       ),
     );
   }

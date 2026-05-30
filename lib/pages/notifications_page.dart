@@ -30,9 +30,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
       }
 
       final response = await http.get(
-        Uri.parse(Config.baseUrl + "get_notifications.php?user_id=${user['id']}"),
+        Uri.parse(
+            Config.baseUrl + "get_notifications.php?user_id=${user['id']}"),
       );
-      
+
       if (mounted) {
         final res = json.decode(response.body);
         setState(() {
@@ -69,13 +70,15 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   @override
   Widget build(BuildContext context) {
-    int unreadCount = notifications.where((n) => n['is_read'].toString() == '0').length;
+    int unreadCount =
+        notifications.where((n) => n['is_read'].toString() == '0').length;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Alerts", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
-        backgroundColor: Colors.orange.shade700,
+        title: Text("Alerts",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+        backgroundColor: Colors.red.shade700,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
@@ -119,12 +122,19 @@ class _NotificationsPageState extends State<NotificationsPage> {
         children: [
           Container(
             padding: EdgeInsets.all(30),
-            decoration: BoxDecoration(color: Colors.grey.shade50, shape: BoxShape.circle),
-            child: Icon(Icons.notifications_none_rounded, size: 80, color: Colors.grey.shade300),
+            decoration: BoxDecoration(
+                color: Colors.grey.shade50, shape: BoxShape.circle),
+            child: Icon(Icons.notifications_none_rounded,
+                size: 80, color: Colors.grey.shade300),
           ),
           SizedBox(height: 20),
-          Text("All caught up!", style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w900)),
-          Text("No new notifications for you", style: TextStyle(color: Colors.grey, fontSize: 16)),
+          Text("All caught up!",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900)),
+          Text("No new notifications for you",
+              style: TextStyle(color: Colors.grey, fontSize: 16)),
         ],
       ),
     );
@@ -136,8 +146,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
       decoration: BoxDecoration(
         color: isRead ? Colors.white : Colors.red.withOpacity(0.02),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isRead ? Colors.grey.shade100 : Colors.red.withOpacity(0.1)),
-        boxShadow: isRead ? [] : [BoxShadow(color: Colors.red.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4))],
+        border: Border.all(
+            color: isRead ? Colors.grey.shade100 : Colors.red.withOpacity(0.1)),
+        boxShadow: isRead
+            ? []
+            : [
+                BoxShadow(
+                    color: Colors.red.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, 4))
+              ],
       ),
       child: InkWell(
         onTap: isRead ? null : () => _markRead(note['id']),
@@ -171,7 +189,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           child: Text(
                             note['title'],
                             style: TextStyle(
-                              fontWeight: isRead ? FontWeight.bold : FontWeight.w900,
+                              fontWeight:
+                                  isRead ? FontWeight.bold : FontWeight.w900,
                               fontSize: 16,
                               color: isRead ? Colors.black87 : Colors.black,
                             ),
@@ -181,19 +200,26 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           Container(
                             width: 8,
                             height: 8,
-                            decoration: BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                            decoration: BoxDecoration(
+                                color: Colors.red, shape: BoxShape.circle),
                           ),
                       ],
                     ),
                     SizedBox(height: 5),
                     Text(
                       note['message'],
-                      style: TextStyle(color: Colors.grey.shade700, fontSize: 14, height: 1.4),
+                      style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 14,
+                          height: 1.4),
                     ),
                     SizedBox(height: 10),
                     Text(
                       note['created_at'],
-                      style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

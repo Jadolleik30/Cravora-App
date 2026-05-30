@@ -8,16 +8,15 @@ class UserDrawer extends StatelessWidget {
       backgroundColor: Colors.white,
       child: Column(
         children: [
-          // Modern Header
           Container(
             padding: EdgeInsets.only(top: 60, left: 20, right: 20, bottom: 30),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.orange.shade700, Colors.orange.shade400],
+                colors: [Colors.red.shade800, Colors.red.shade500],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.only(bottomRight: Radius.circular(50)),
+              borderRadius: BorderRadius.only(bottomRight: Radius.circular(42)),
             ),
             child: Row(
               children: [
@@ -37,7 +36,10 @@ class UserDrawer extends StatelessWidget {
                     children: [
                       Text(
                         Session.userName ?? "Guest User",
-                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -49,9 +51,16 @@ class UserDrawer extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
-                        child: Text("${Session.userPoints} pts", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                            color: Colors.white24,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Text("${Session.userPoints} pts",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
@@ -59,56 +68,71 @@ class UserDrawer extends StatelessWidget {
               ],
             ),
           ),
-
-          // Menu Items
           Expanded(
             child: ListView(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               physics: BouncingScrollPhysics(),
               children: [
-                _buildDrawerItem(context, Icons.restaurant_menu_outlined, "Browse Menu", '/delivery'),
-                _buildDrawerItem(context, Icons.storefront_outlined, "All Restaurants", '/restaurants'),
-                _buildDrawerItem(context, Icons.stars_outlined, "Cravora Rewards", '/rewards', iconColor: Colors.amber),
-                _buildDrawerItem(context, Icons.history_outlined, "Order History", '/order_history'),
-                _buildDrawerItem(context, Icons.chat_bubble_outline, "Support Center", '/support'),
-                _buildDrawerItem(context, Icons.person_outline, "My Profile", '/profile'),
-                
+                _buildDrawerItem(context, Icons.restaurant_menu_outlined,
+                    "Browse Menu", '/delivery'),
+                _buildDrawerItem(context, Icons.storefront_outlined,
+                    "All Restaurants", '/restaurants'),
+                _buildDrawerItem(context, Icons.stars_outlined,
+                    "Cravora Rewards", '/rewards'),
+                _buildDrawerItem(context, Icons.history_outlined,
+                    "Order History", '/order_history'),
+                _buildDrawerItem(context, Icons.chat_bubble_outline,
+                    "Support Center", '/support'),
+                _buildDrawerItem(
+                    context, Icons.person_outline, "My Profile", '/profile'),
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Divider(color: Colors.grey.shade100, thickness: 1),
                 ),
-                
-                _buildDrawerItem(context, Icons.logout_outlined, "Sign Out", '/logout', isLogout: true),
+                _buildDrawerItem(
+                    context, Icons.logout_outlined, "Sign Out", '/logout',
+                    isLogout: true),
               ],
             ),
           ),
-
-          // Footer
           Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Text("CRAVORA v1.2.0", style: TextStyle(color: Colors.grey.shade300, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+            child: Text("CRAVORA v1.2.0",
+                style: TextStyle(
+                    color: Colors.red.shade200,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDrawerItem(BuildContext context, IconData icon, String title, String route, {Color? iconColor, bool isLogout = false}) {
+  Widget _buildDrawerItem(
+      BuildContext context, IconData icon, String title, String route,
+      {Color? iconColor, bool isLogout = false}) {
     return Container(
       margin: EdgeInsets.only(bottom: 5),
       child: ListTile(
         onTap: () {
           if (isLogout) {
             Session.logout();
-            Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/home', (route) => false);
           } else {
             Navigator.pushReplacementNamed(context, route);
           }
         },
         leading: Container(
           padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(color: (isLogout ? Colors.red : Colors.grey).withOpacity(0.05), borderRadius: BorderRadius.circular(12)),
-          child: Icon(icon, color: isLogout ? Colors.red : (iconColor ?? Colors.black87), size: 22),
+          decoration: BoxDecoration(
+              color: (isLogout ? Colors.red : Colors.red.shade700)
+                  .withOpacity(0.08),
+              borderRadius: BorderRadius.circular(12)),
+          child: Icon(icon,
+              color: isLogout ? Colors.red : (iconColor ?? Colors.red.shade700),
+              size: 22),
         ),
         title: Text(
           title,
@@ -119,7 +143,8 @@ class UserDrawer extends StatelessWidget {
           ),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        trailing: Icon(Icons.arrow_forward_ios, size: 12, color: Colors.grey.shade300),
+        trailing: Icon(Icons.arrow_forward_ios,
+            size: 12, color: Colors.grey.shade300),
       ),
     );
   }

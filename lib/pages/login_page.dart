@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Please fill all fields"),
-          backgroundColor: Colors.orange));
+          backgroundColor: Colors.red));
       return;
     }
 
@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
       } else if (data['status'] == "unverified") {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(data['message']), backgroundColor: Colors.orange));
+            content: Text(data['message']), backgroundColor: Colors.red));
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
               _buildModernInput(
                 controller: _passwordController,
                 label: "Password",
-                hint: "••••••••",
+                hint: "********",
                 icon: Icons.lock_outline,
                 obscure: _obscurePassword,
                 suffix: IconButton(
