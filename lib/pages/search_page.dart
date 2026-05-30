@@ -88,6 +88,7 @@ class _SearchPageState extends State<SearchPage> {
                         subtitle: Text("\$${food['price']}"),
                         onTap: () {
                           Navigator.pushNamed(context, '/food_details', arguments: {
+                            'id': food['id'],
                             'name': food['name'],
                             'price': food['price'].toString(),
                             'image': imageUrl,
@@ -96,6 +97,7 @@ class _SearchPageState extends State<SearchPage> {
                             'calories': food['calories']?.toString(),
                             'ingredients': food['ingredients'],
                             'featured_review': food['featured_review'],
+                            'restaurant_id': food['restaurant_id'],
                           });
                         },
                       );

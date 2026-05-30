@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+require_admin($conn);
 
 $user_id = $_POST['user_id'] ?? null; // Can be null for "all"
 $title = $_POST['title'] ?? '';
@@ -13,6 +14,12 @@ if (empty($title) || empty($message)) {
 // Convert "null" string to actual null if passed as string
 if ($user_id === "null" || $user_id === "") {
     $user_id = null;
+} else {
+    $user_id = filter_var($user_id, FILTER_VALIDATE_INT);
+    if (!$user_id || $user_id < 1) {
+        echo json_encode(["status" => "error", "message" => "Invalid user"]);
+        exit;
+    }
 }
 
 $sql = "INSERT INTO notifications (user_id, title, message) VALUES (?, ?, ?)";

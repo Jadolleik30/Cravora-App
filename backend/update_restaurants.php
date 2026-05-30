@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+require_cli_or_admin($conn);
 
 // 1. Create restaurants table
 $sql = "CREATE TABLE IF NOT EXISTS restaurants (

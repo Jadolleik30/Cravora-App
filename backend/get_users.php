@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+require_admin($conn);
 
 $res = $conn->query("SELECT id, name, email, role, phone, address FROM users");
 $users = [];

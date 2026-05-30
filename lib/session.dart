@@ -24,7 +24,19 @@ class Session {
   static String? activeRestaurantName;
   static List<Map<String, dynamic>> cartItems = [];
 
-  static double get cartTotal => cartItems.fold(0, (sum, item) => sum + (double.tryParse(item['price'].toString()) ?? 0));
+  static double get cartTotal => cartItems.fold(0, (sum, item) => sum + (itemPrice(item) * itemQuantity(item)));
+  static int get cartItemCount => cartItems.fold(0, (sum, item) => sum + itemQuantity(item));
+
+  static double itemPrice(Map item) {
+    final price = double.tryParse(item['price'].toString()) ?? 0;
+    final discount = double.tryParse(item['discount']?.toString() ?? "");
+    return discount != null && discount > 0 && discount < price ? discount : price;
+  }
+
+  static int itemQuantity(Map item) {
+    final quantity = int.tryParse(item['quantity']?.toString() ?? "1") ?? 1;
+    return quantity < 1 ? 1 : quantity;
+  }
 
   static void login(Map user) {
     isLoggedIn = true;
@@ -47,7 +59,15 @@ class Session {
     }
     activeRestaurantId = restId;
     activeRestaurantName = item['restaurant_name'];
-    cartItems.add(item);
+
+    final itemId = item['id']?.toString();
+    final existingIndex = cartItems.indexWhere((cartItem) => cartItem['id']?.toString() == itemId);
+    if (itemId != null && existingIndex >= 0) {
+      final existing = cartItems[existingIndex];
+      existing['quantity'] = itemQuantity(existing) + 1;
+    } else {
+      cartItems.add({...item, 'quantity': itemQuantity(item)});
+    }
   }
 
   static void clearCart() {
@@ -65,6 +85,8 @@ class Session {
     userAddress = null;
     userDOB = null;
     userGender = null;
+    userRole = null;
+    userPoints = 0;
     clearCart();
   }
 }

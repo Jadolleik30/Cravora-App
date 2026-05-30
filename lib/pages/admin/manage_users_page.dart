@@ -22,7 +22,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
 
   Future<void> _fetchUsers() async {
     try {
-      final response = await http.get(Uri.parse(Config.baseUrl + "get_users.php"));
+      final response = await http.get(Uri.parse(Config.baseUrl + "get_users.php?admin_id=${Session.userId}"));
       setState(() {
         users = json.decode(response.body);
         _isLoading = false;
@@ -36,7 +36,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
     try {
       final response = await http.post(
         Uri.parse(Config.baseUrl + "admin_delete.php"),
-        body: {"table": "users", "id": id.toString()},
+        body: {"table": "users", "id": id.toString(), "admin_id": Session.userId.toString()},
       );
       final res = json.decode(response.body);
       if (res['status'] == 'success') {
@@ -80,6 +80,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
             onPressed: () async {
               Map<String, String> body = {
                 "table": "users",
+                "admin_id": Session.userId.toString(),
                 "id": user?['id']?.toString() ?? "",
                 "name": nameController.text,
                 "email": emailController.text,

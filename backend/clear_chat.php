@@ -1,15 +1,23 @@
 <?php
 require 'config.php';
 
-$user_id = $_POST['user_id'];
+$user_id = request_int('user_id');
 
-$sql = "DELETE FROM messages WHERE sender_id = '$user_id' OR receiver_id = '$user_id'";
-
-if ($conn->query($sql) === TRUE) {
-    echo json_encode(["status" => "success"]);
-} else {
-    echo json_encode(["status" => "error", "message" => $conn->error]);
+if (!$user_id || $user_id < 1) {
+    echo json_encode(["status" => "error", "message" => "Invalid user"]);
+    exit;
 }
 
+$sql = "DELETE FROM messages WHERE sender_id = ? OR receiver_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ii", $user_id, $user_id);
+
+if ($stmt->execute()) {
+    echo json_encode(["status" => "success"]);
+} else {
+    echo json_encode(["status" => "error", "message" => "Failed to clear chat"]);
+}
+
+$stmt->close();
 $conn->close();
 ?>

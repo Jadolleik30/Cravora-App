@@ -163,7 +163,7 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
                         child: Image.network(item['image'], width: 60, height: 60, fit: BoxFit.cover),
                       ),
                       title: Text(item['name'], style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text("\$${item['price']}"),
+                      subtitle: Text("${Session.itemQuantity(item)} x \$${Session.itemPrice(item).toStringAsFixed(2)}"),
                       trailing: IconButton(icon: Icon(Icons.remove_circle_outline, color: Colors.grey), onPressed: () {}),
                     ),
                   );
@@ -210,10 +210,13 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
       'price': food['price'].toString(),
       'image': imageUrl,
       'description': food['description'],
+      'discount': food['discount']?.toString(),
       'restaurant_id': food['restaurant_id'],
       'restaurant_name': food['restaurant_name'],
       'rating': food['rating']?.toString() ?? "4.8",
       'calories': food['calories']?.toString() ?? "320",
+      'ingredients': food['ingredients'],
+      'featured_review': food['featured_review'],
     });
   }
 
@@ -241,7 +244,7 @@ class _DeliveryFoodPageState extends State<DeliveryFoodPage> {
               backgroundColor: Colors.black,
               elevation: 10,
               icon: Icon(Icons.shopping_bag, color: Colors.white),
-              label: Text("${Session.cartItems.length} items  |  \$${Session.cartTotal.toStringAsFixed(2)}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              label: Text("${Session.cartItemCount} items  |  \$${Session.cartTotal.toStringAsFixed(2)}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

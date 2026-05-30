@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../config.dart';
+import '../../session.dart';
 import '../../widgets/admin_drawer.dart';
 
 class ManageOrdersPage extends StatefulWidget {
@@ -21,7 +22,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
 
   Future<void> _fetchOrders() async {
     try {
-      final response = await http.get(Uri.parse(Config.baseUrl + "get_orders.php"));
+      final response = await http.get(Uri.parse(Config.baseUrl + "get_orders.php?is_admin=true&admin_id=${Session.userId}"));
       setState(() {
         orders = json.decode(response.body);
         _isLoading = false;

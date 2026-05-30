@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../config.dart';
+import '../../session.dart';
 import '../../widgets/admin_drawer.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -21,7 +22,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   Future<void> _fetchStats() async {
     try {
-      final response = await http.get(Uri.parse(Config.baseUrl + "admin_stats.php"));
+      final response = await http.get(Uri.parse(Config.baseUrl + "admin_stats.php?admin_id=${Session.userId}"));
       setState(() {
         stats = json.decode(response.body);
         _isLoading = false;

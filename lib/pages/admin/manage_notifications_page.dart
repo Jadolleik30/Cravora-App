@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../config.dart';
+import '../../session.dart';
 import '../../widgets/admin_drawer.dart';
 
 class ManageNotificationsPage extends StatefulWidget {
@@ -31,7 +32,7 @@ class _ManageNotificationsPageState extends State<ManageNotificationsPage> {
 
   Future<void> _fetchNotifications() async {
     try {
-      final response = await http.get(Uri.parse(Config.baseUrl + "get_notifications.php?is_admin=true"));
+      final response = await http.get(Uri.parse(Config.baseUrl + "get_notifications.php?is_admin=true&admin_id=${Session.userId}"));
       final res = json.decode(response.body);
       if (res['status'] == 'success') {
         notifications = res['data'];
@@ -43,7 +44,7 @@ class _ManageNotificationsPageState extends State<ManageNotificationsPage> {
 
   Future<void> _fetchUsers() async {
     try {
-      final response = await http.get(Uri.parse(Config.baseUrl + "get_users.php"));
+      final response = await http.get(Uri.parse(Config.baseUrl + "get_users.php?admin_id=${Session.userId}"));
       users = json.decode(response.body);
     } catch (e) {
       print("Error fetching users: $e");
@@ -54,7 +55,7 @@ class _ManageNotificationsPageState extends State<ManageNotificationsPage> {
     try {
       final response = await http.post(
         Uri.parse(Config.baseUrl + "delete_notification.php"),
-        body: {"id": id.toString()},
+        body: {"id": id.toString(), "admin_id": Session.userId.toString()},
       );
       final res = json.decode(response.body);
       if (res['status'] == 'success') {
@@ -105,6 +106,7 @@ class _ManageNotificationsPageState extends State<ManageNotificationsPage> {
             ElevatedButton(
               onPressed: () async {
                 Map<String, String> body = {
+                  "admin_id": Session.userId.toString(),
                   "user_id": selectedUserId ?? "null",
                   "title": titleController.text,
                   "message": messageController.text,

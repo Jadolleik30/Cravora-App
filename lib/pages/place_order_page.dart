@@ -62,8 +62,12 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
       return;
     }
 
-    double originalPrice = Session.cartTotal;
-    double finalPrice = originalPrice - _discountAmount;
+    final items = Session.cartItems
+        .map((item) => {
+              "food_id": item['id'],
+              "quantity": Session.itemQuantity(item),
+            })
+        .toList();
 
     setState(() => _isLoading = true);
     try {
@@ -71,10 +75,10 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
         Uri.parse(Config.baseUrl + "place_order.php"),
         body: {
           "user_id": Session.userId.toString(),
-          "total_price": finalPrice.toStringAsFixed(2),
           "address": _addressController.text,
           "payment_method": _paymentMethod,
           "voucher_code": _appliedVoucherCode ?? "",
+          "items": json.encode(items),
         },
       );
 
@@ -82,7 +86,7 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
       if (data['status'] == 'success') {
 
         Session.clearCart();
-        Session.userPoints += finalPrice.toInt();
+        Session.userPoints += int.tryParse(data['points']?.toString() ?? "0") ?? 0;
 
         Navigator.pushNamed(
           context,
@@ -221,6 +225,7 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
   }
 
   Widget _buildModernItemCard(Map food) {
+    final quantity = Session.itemQuantity(food);
     return Container(
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -240,11 +245,11 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(food['name']!, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-                Text("Standard Portion", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                Text(quantity > 1 ? "Standard Portion x$quantity" : "Standard Portion", style: TextStyle(color: Colors.grey, fontSize: 12)),
               ],
             ),
           ),
-          Text("\$${food['price']}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.black)),
+          Text("\$${(Session.itemPrice(food) * quantity).toStringAsFixed(2)}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.black)),
         ],
       ),
     );

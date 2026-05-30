@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+require_cli_or_admin($conn);
 
 $sql = "SELECT * FROM notifications";
 $result = $conn->query($sql);

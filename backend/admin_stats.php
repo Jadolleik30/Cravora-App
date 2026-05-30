@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+require_admin($conn);
 
 $stats = [];
 

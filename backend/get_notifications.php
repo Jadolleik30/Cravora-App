@@ -5,6 +5,8 @@ $user_id = $_GET['user_id'] ?? null;
 $is_admin = isset($_GET['is_admin']) && $_GET['is_admin'] == 'true';
 
 if ($is_admin) {
+    require_admin($conn);
+
     $sql = "SELECT n.*, u.name as user_name FROM notifications n LEFT JOIN users u ON n.user_id = u.id ORDER BY n.created_at DESC";
     $result = $conn->query($sql);
     $notifications = [];

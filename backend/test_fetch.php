@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+require_cli_or_admin($conn);
 $user_id = 1;
 $sql = "SELECT n.*, 
         CASE 

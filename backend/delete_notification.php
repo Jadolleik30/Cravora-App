@@ -1,7 +1,8 @@
 <?php
 require 'config.php';
+require_admin($conn);
 
-$id = $_POST['id'] ?? null;
+$id = request_int('id');
 
 if (!$id) {
     echo json_encode(["status" => "error", "message" => "ID is required"]);

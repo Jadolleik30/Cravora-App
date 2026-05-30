@@ -1,39 +1,92 @@
 <?php
 require 'config.php';
+require_admin($conn);
 
-$table = $_POST['table'];
-$id = $_POST['id'] ?? null;
+$allowedColumns = [
+    'users' => ['name', 'email', 'role', 'password', 'phone', 'address', 'dob', 'gender', 'points', 'is_verified'],
+    'restaurants' => ['name', 'image', 'description', 'rating', 'review_count'],
+    'food_items' => ['category_id', 'name', 'description', 'price', 'image', 'rating', 'discount', 'ingredients', 'calories', 'featured_review', 'restaurant_id'],
+];
+
+$table = $_POST['table'] ?? '';
+$id = request_int('id');
 $data = $_POST;
-unset($data['table'], $data['id']);
+unset($data['table'], $data['id'], $data['admin_id']);
 
-if ($table == 'users' && isset($data['password'])) {
-    $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+if (!isset($allowedColumns[$table])) {
+    echo json_encode(["status" => "error", "message" => "Invalid table"]);
+    exit;
 }
 
-$fields = [];
-$values = [];
-$updates = [];
+if ($table == 'users' && array_key_exists('password', $data)) {
+    if (trim($data['password']) === '') {
+        unset($data['password']);
+    } else {
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+    }
+}
 
+if ($table == 'users' && !$id && empty($data['password'])) {
+    echo json_encode(["status" => "error", "message" => "Password is required for new users"]);
+    exit;
+}
+
+$filtered = [];
 foreach ($data as $key => $val) {
-    $val_esc = $conn->real_escape_string($val);
-    $fields[] = $key;
-    $values[] = "'$val_esc'";
-    $updates[] = "$key = '$val_esc'";
+    if (in_array($key, $allowedColumns[$table], true)) {
+        $filtered[$key] = $val;
+    }
 }
 
-if ($id && $id != "null" && $id != "") {
+if (empty($filtered)) {
+    echo json_encode(["status" => "error", "message" => "No valid fields to save"]);
+    exit;
+}
+
+function bind_params($stmt, $types, &$values) {
+    $params = [$types];
+    foreach ($values as $key => &$value) {
+        $params[] = &$value;
+    }
+    return call_user_func_array([$stmt, 'bind_param'], $params);
+}
+
+$fields = array_keys($filtered);
+$values = array_values($filtered);
+
+if ($id && $id > 0) {
     // Update
-    $sql = "UPDATE $table SET " . implode(", ", $updates) . " WHERE id = $id";
+    $updates = array_map(function($field) {
+        return "`$field` = ?";
+    }, $fields);
+    $sql = "UPDATE `$table` SET " . implode(", ", $updates) . " WHERE id = ?";
+    $values[] = $id;
+    $types = str_repeat("s", count($fields)) . "i";
 } else {
     // Insert
-    $sql = "INSERT INTO $table (" . implode(", ", $fields) . ") VALUES (" . implode(", ", $values) . ")";
+    $columns = implode(", ", array_map(function($field) {
+        return "`$field`";
+    }, $fields));
+    $placeholders = implode(", ", array_fill(0, count($fields), "?"));
+    $sql = "INSERT INTO `$table` ($columns) VALUES ($placeholders)";
+    $types = str_repeat("s", count($fields));
 }
 
-if ($conn->query($sql) === TRUE) {
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode(["status" => "error", "message" => "Could not prepare save"]);
+    $conn->close();
+    exit;
+}
+
+bind_params($stmt, $types, $values);
+
+if ($stmt->execute()) {
     echo json_encode(["status" => "success"]);
 } else {
-    echo json_encode(["status" => "error", "message" => $conn->error]);
+    echo json_encode(["status" => "error", "message" => "Save failed"]);
 }
 
+$stmt->close();
 $conn->close();
 ?>

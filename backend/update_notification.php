@@ -1,7 +1,8 @@
 <?php
 require 'config.php';
+require_admin($conn);
 
-$id = $_POST['id'] ?? null;
+$id = request_int('id');
 $user_id = $_POST['user_id'] ?? null;
 $title = $_POST['title'] ?? '';
 $message = $_POST['message'] ?? '';
@@ -13,6 +14,12 @@ if (!$id || empty($title) || empty($message)) {
 
 if ($user_id === "null" || $user_id === "") {
     $user_id = null;
+} else {
+    $user_id = filter_var($user_id, FILTER_VALIDATE_INT);
+    if (!$user_id || $user_id < 1) {
+        echo json_encode(["status" => "error", "message" => "Invalid user"]);
+        exit;
+    }
 }
 
 $sql = "UPDATE notifications SET user_id = ?, title = ?, message = ? WHERE id = ?";

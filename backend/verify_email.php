@@ -1,8 +1,8 @@
 <?php
 require 'config.php';
 
-$email = $_POST['email'] ?? '';
-$code = $_POST['code'] ?? '';
+$email = trim($_POST['email'] ?? '');
+$code = trim($_POST['code'] ?? '');
 
 if (empty($email) || empty($code)) {
     echo json_encode([
@@ -26,7 +26,8 @@ if ($result->num_rows > 0) {
 
     $update = $conn->prepare(
         "UPDATE users
-         SET is_verified = 1
+         SET is_verified = 1,
+             verification_code = NULL
          WHERE email = ?"
     );
 

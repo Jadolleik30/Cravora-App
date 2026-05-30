@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+require_cli_or_admin($conn);
 
 $res = $conn->query("SELECT id FROM users");
 while($u = $res->fetch_assoc()) {

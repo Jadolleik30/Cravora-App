@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../config.dart';
+import '../../session.dart';
 import '../../widgets/admin_drawer.dart';
 
 class ManageFoodPage extends StatefulWidget {
@@ -38,7 +39,7 @@ class _ManageFoodPageState extends State<ManageFoodPage> {
     try {
       final response = await http.post(
         Uri.parse(Config.baseUrl + "admin_delete.php"),
-        body: {"table": "food_items", "id": id.toString()},
+        body: {"table": "food_items", "id": id.toString(), "admin_id": Session.userId.toString()},
       );
       _fetchFoods();
     } catch (e) {}
@@ -87,6 +88,7 @@ class _ManageFoodPageState extends State<ManageFoodPage> {
                 Uri.parse(Config.baseUrl + "admin_save.php"),
                 body: {
                   "table": "food_items",
+                  "admin_id": Session.userId.toString(),
                   "id": food?['id']?.toString() ?? "",
                   "name": nameController.text,
                   "price": priceController.text,

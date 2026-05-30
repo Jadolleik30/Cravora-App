@@ -1,5 +1,6 @@
 <?php
 require 'config.php';
+require_cli_or_admin($conn);
 $conn->query("CREATE TABLE IF NOT EXISTS notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NULL,
