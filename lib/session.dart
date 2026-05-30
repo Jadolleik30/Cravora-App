@@ -12,6 +12,18 @@ class Session {
   static bool isVerified = false;
   static bool profileCompleted = false;
 
+  static bool _isTrue(dynamic value) {
+    if (value == true) return true;
+    final normalized = value?.toString().trim().toLowerCase();
+    return normalized == '1' || normalized == 'true';
+  }
+
+  static String? _stringOrNull(dynamic value) {
+    if (value == null) return null;
+    final text = value.toString();
+    return text == 'null' ? null : text;
+  }
+
   static Future<Map<String, dynamic>?> getUser() async {
     if (!isLoggedIn || userId == null) return null;
     return {
@@ -23,19 +35,23 @@ class Session {
       'profile_completed': profileCompleted ? 1 : 0,
     };
   }
-  
+
   // Cart management
   static int? activeRestaurantId;
   static String? activeRestaurantName;
   static List<Map<String, dynamic>> cartItems = [];
 
-  static double get cartTotal => cartItems.fold(0, (sum, item) => sum + (itemPrice(item) * itemQuantity(item)));
-  static int get cartItemCount => cartItems.fold(0, (sum, item) => sum + itemQuantity(item));
+  static double get cartTotal => cartItems.fold(
+      0, (sum, item) => sum + (itemPrice(item) * itemQuantity(item)));
+  static int get cartItemCount =>
+      cartItems.fold(0, (sum, item) => sum + itemQuantity(item));
 
   static double itemPrice(Map item) {
     final price = double.tryParse(item['price'].toString()) ?? 0;
     final discount = double.tryParse(item['discount']?.toString() ?? "");
-    return discount != null && discount > 0 && discount < price ? discount : price;
+    return discount != null && discount > 0 && discount < price
+        ? discount
+        : price;
   }
 
   static int itemQuantity(Map item) {
@@ -44,18 +60,20 @@ class Session {
   }
 
   static void login(Map user) {
-    isLoggedIn = true;
-    userId = int.tryParse(user['id'].toString());
-    userName = user['name'];
-    userEmail = user['email'];
-    userRole = user['role'] ?? 'user';
-    userPhone = user['phone'];
-    userAddress = user['address'];
-    userDOB = user['dob'];
-    userGender = user['gender'];
+    userId = int.tryParse(user['id']?.toString() ?? '');
+    userName = _stringOrNull(user['name']);
+    userEmail = _stringOrNull(user['email']);
+    userRole = _stringOrNull(user['role']) ?? 'user';
+    userPhone = _stringOrNull(user['phone']);
+    userAddress = _stringOrNull(user['address']);
+    userDOB = _stringOrNull(user['dob']);
+    userGender = _stringOrNull(user['gender']);
     userPoints = int.tryParse(user['points']?.toString() ?? "0") ?? 0;
-    isVerified = user['is_verified'].toString() == '1' || user['is_verified'] == true;
-    profileCompleted = user['profile_completed'].toString() == '1' || user['profile_completed'] == true;
+    isVerified =
+        user.containsKey('is_verified') ? _isTrue(user['is_verified']) : true;
+    profileCompleted =
+        _isTrue(user['profile_completed']) || isProfileComplete();
+    isLoggedIn = userId != null && (userEmail ?? '').isNotEmpty;
   }
 
   static void addToCart(Map<String, dynamic> item) {
@@ -68,7 +86,8 @@ class Session {
     activeRestaurantName = item['restaurant_name'];
 
     final itemId = item['id']?.toString();
-    final existingIndex = cartItems.indexWhere((cartItem) => cartItem['id']?.toString() == itemId);
+    final existingIndex = cartItems
+        .indexWhere((cartItem) => cartItem['id']?.toString() == itemId);
     if (itemId != null && existingIndex >= 0) {
       final existing = cartItems[existingIndex];
       existing['quantity'] = itemQuantity(existing) + 1;

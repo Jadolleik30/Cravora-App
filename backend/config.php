@@ -36,6 +36,34 @@ function request_int($key) {
     return $intValue === false ? null : $intValue;
 }
 
+function cravora_profile_fields_complete($user) {
+    return trim((string)($user['name'] ?? '')) !== ''
+        && trim((string)($user['phone'] ?? '')) !== ''
+        && trim((string)($user['address'] ?? '')) !== ''
+        && trim((string)($user['gender'] ?? '')) !== '';
+}
+
+function cravora_user_payload($user) {
+    $profileCompleted = (int)($user['profile_completed'] ?? 0);
+    if ($profileCompleted !== 1 && cravora_profile_fields_complete($user)) {
+        $profileCompleted = 1;
+    }
+
+    return [
+        "id" => $user['id'] ?? null,
+        "name" => $user['name'] ?? "",
+        "email" => $user['email'] ?? "",
+        "role" => $user['role'] ?? "user",
+        "phone" => $user['phone'] ?? "",
+        "address" => $user['address'] ?? "",
+        "dob" => $user['dob'] ?? "",
+        "gender" => $user['gender'] ?? "",
+        "points" => $user['points'] ?? 0,
+        "is_verified" => isset($user['is_verified']) ? (int)$user['is_verified'] : 1,
+        "profile_completed" => $profileCompleted
+    ];
+}
+
 function is_admin_request($conn) {
     $admin_id = request_int('admin_id');
     if (!$admin_id || $admin_id < 1) {

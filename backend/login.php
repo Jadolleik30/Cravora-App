@@ -9,8 +9,14 @@ if (empty($email) || empty($password)) {
     exit;
 }
 
-$sql = "SELECT * FROM users WHERE email = ?";
+$sql = "SELECT id, name, email, password, role, phone, address, dob, gender, points, is_verified, profile_completed FROM users WHERE email = ? LIMIT 1";
 $stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode(["status" => "error", "message" => "Login is not ready. Please run the users table migration."]);
+    $conn->close();
+    exit;
+}
+
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -27,22 +33,21 @@ if ($result->num_rows > 0) {
             exit;
         }
 
+        $payload = cravora_user_payload($user);
+        if ((int)$payload['profile_completed'] === 1 && (int)($user['profile_completed'] ?? 0) !== 1) {
+            $markProfile = $conn->prepare("UPDATE users SET profile_completed = 1 WHERE id = ?");
+            if ($markProfile) {
+                $userId = (int)$user['id'];
+                $markProfile->bind_param("i", $userId);
+                $markProfile->execute();
+                $markProfile->close();
+            }
+        }
+
         echo json_encode([
             "status" => "success", 
             "message" => "Login successful", 
-            "user" => [
-                "id" => $user['id'],
-                "name" => $user['name'],
-                "email" => $user['email'],
-                "role" => $user['role'],
-                "phone" => $user['phone'],
-                "address" => $user['address'],
-                "dob" => $user['dob'],
-                "gender" => $user['gender'],
-                "points" => $user['points'],
-                "is_verified" => $user['is_verified'] ?? 1,
-                "profile_completed" => $user['profile_completed'] ?? 0
-            ]
+            "user" => $payload
         ]);
     } else {
         echo json_encode(["status" => "error", "message" => "Invalid email or password"]);

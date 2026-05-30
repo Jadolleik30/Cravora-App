@@ -17,9 +17,29 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
+  Map<String, dynamic>? _decodeJson(String body) {
+    if (body.trim().isEmpty) return null;
+
+    try {
+      final decoded = json.decode(body);
+      if (decoded is Map) {
+        return Map<String, dynamic>.from(decoded);
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
+
   Future<void> _login() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill all fields"), backgroundColor: Colors.orange));
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Please fill all fields"),
+          backgroundColor: Colors.orange));
       return;
     }
 
@@ -28,38 +48,61 @@ class _LoginPageState extends State<LoginPage> {
       final response = await http.post(
         Uri.parse(Config.baseUrl + "login.php"),
         body: {
-          "email": _emailController.text,
-          "password": _passwordController.text,
+          "email": email,
+          "password": password,
         },
       );
 
-      final data = json.decode(response.body);
+      final data = _decodeJson(response.body);
+      if (data == null) {
+        throw FormatException("Invalid server response");
+      }
+
       if (data['status'] == "success") {
-        Session.login(data['user']);
+        final user = data['user'];
+        if (user is! Map) {
+          throw FormatException("Missing user data");
+        }
+
+        Session.login(Map<String, dynamic>.from(user));
+        if (!mounted) return;
+
         if (Session.userRole == 'admin') {
-          Navigator.pushReplacementNamed(context, '/admin_dashboard');
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/admin_dashboard', (route) => false);
         } else if (!Session.profileCompleted) {
-          Navigator.pushReplacementNamed(context, '/profile');
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/profile', (route) => false);
         } else {
-          Navigator.pushReplacementNamed(context, '/home');
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
         }
       } else if (data['status'] == "unverified") {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['message']), backgroundColor: Colors.orange));
-        Navigator.push(
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(data['message']), backgroundColor: Colors.orange));
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (_) => VerifyPage(
-              email: data['email'] ?? _emailController.text.trim(),
+              email: data['email'] ?? email,
             ),
           ),
+          (route) => false,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['message']), backgroundColor: Colors.red));
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(data['message'] ?? "Login failed"),
+            backgroundColor: Colors.red));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Connection Error"), backgroundColor: Colors.red));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Connection Error"), backgroundColor: Colors.red));
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -83,20 +126,29 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 20),
               Container(
                 padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(20)),
-                child: Icon(Icons.lock_person_outlined, color: Colors.red, size: 40),
+                decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Icon(Icons.lock_person_outlined,
+                    color: Colors.red, size: 40),
               ),
               SizedBox(height: 30),
               Text(
                 "Welcome Back!",
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.black),
+                style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black),
               ),
               Text(
                 "Login to continue your foodie journey",
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w500),
               ),
               SizedBox(height: 50),
-              
+
               // Email Field
               _buildModernInput(
                 controller: _emailController,
@@ -106,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                 keyboardType: TextInputType.emailAddress,
               ),
               SizedBox(height: 25),
-              
+
               // Password Field
               _buildModernInput(
                 controller: _passwordController,
@@ -115,37 +167,48 @@ class _LoginPageState extends State<LoginPage> {
                 icon: Icons.lock_outline,
                 obscure: _obscurePassword,
                 suffix: IconButton(
-                  icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
-                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.grey),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
-              
-              
+
               SizedBox(height: 30),
-              
+
               _isLoading
                   ? Center(child: CircularProgressIndicator(color: Colors.red))
                   : ElevatedButton(
                       onPressed: _login,
-                      child: Text("Login", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      child: Text("Login",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         minimumSize: Size(double.infinity, 60),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
                         elevation: 0,
                       ),
                     ),
-              
+
               SizedBox(height: 20),
-              
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("New to Cravora?", style: TextStyle(color: Colors.grey.shade600)),
+                  Text("New to Cravora?",
+                      style: TextStyle(color: Colors.grey.shade600)),
                   TextButton(
-                    onPressed: () => Navigator.pushReplacementNamed(context, '/signup'),
-                    child: Text("Create Account", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                    onPressed: () =>
+                        Navigator.pushReplacementNamed(context, '/signup'),
+                    child: Text("Create Account",
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -169,7 +232,11 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 14)),
+        Text(label,
+            style: TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+                fontSize: 14)),
         SizedBox(height: 10),
         TextField(
           controller: controller,

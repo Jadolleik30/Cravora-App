@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
         '/about': (context) => AboutPage(),
         '/restaurants': (context) => RestaurantsPage(),
         '/delivery': (context) => DeliveryFoodPage(),
+        '/delivery_food': (context) => DeliveryFoodPage(),
         '/profile': (context) => ProfilePage(),
         '/order_history': (context) => OrderHistoryPage(),
         '/support': (context) => SupportPage(),

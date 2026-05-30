@@ -13,17 +13,17 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _nameController =
-  TextEditingController(text: Session.userName ?? '');
+      TextEditingController(text: Session.userName ?? '');
   final TextEditingController _emailController =
-  TextEditingController(text: Session.userEmail ?? '');
+      TextEditingController(text: Session.userEmail ?? '');
   final TextEditingController _phoneController =
-  TextEditingController(text: Session.userPhone ?? '');
+      TextEditingController(text: Session.userPhone ?? '');
   final TextEditingController _addressController =
-  TextEditingController(text: Session.userAddress ?? '');
+      TextEditingController(text: Session.userAddress ?? '');
   final TextEditingController _dobController =
-  TextEditingController(text: Session.userDOB ?? '');
+      TextEditingController(text: Session.userDOB ?? '');
   final TextEditingController _genderController =
-  TextEditingController(text: Session.userGender ?? '');
+      TextEditingController(text: Session.userGender ?? '');
 
   bool _isLoading = false;
 
@@ -31,7 +31,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return _nameController.text.trim().isNotEmpty &&
         _phoneController.text.trim().isNotEmpty &&
         _addressController.text.trim().isNotEmpty &&
-        _dobController.text.trim().isNotEmpty &&
         _genderController.text.trim().isNotEmpty;
   }
 
@@ -90,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Navigator.pushNamedAndRemoveUntil(
             context,
             '/home',
-                (route) => false,
+            (route) => false,
           );
         }
       } else {
@@ -124,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.pushNamedAndRemoveUntil(
       context,
       '/login',
-          (route) => false,
+      (route) => false,
     );
   }
 
@@ -178,7 +177,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                 ),
-
               Container(
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -218,9 +216,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 15),
-
                     Text(
                       (Session.userName ?? '').isNotEmpty
                           ? Session.userName!
@@ -230,7 +226,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-
                     Text(
                       (Session.userEmail ?? '').isNotEmpty
                           ? Session.userEmail!
@@ -240,9 +235,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     const SizedBox(height: 15),
-
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -274,7 +267,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
@@ -287,35 +279,27 @@ class _ProfilePageState extends State<ProfilePage> {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-
                     const SizedBox(height: 20),
-
                     _buildModernField(
                       _nameController,
                       "Full Name",
                       Icons.person_outline,
                     ),
-
                     const SizedBox(height: 15),
-
                     _buildModernField(
                       _emailController,
                       "Email",
                       Icons.email_outlined,
                       readOnly: true,
                     ),
-
                     const SizedBox(height: 15),
-
                     _buildModernField(
                       _phoneController,
                       "Phone Number",
                       Icons.phone_android_outlined,
                       keyboardType: TextInputType.phone,
                     ),
-
                     const SizedBox(height: 15),
-
                     Row(
                       children: [
                         Expanded(child: _buildDatePickerField()),
@@ -323,44 +307,38 @@ class _ProfilePageState extends State<ProfilePage> {
                         Expanded(child: _buildGenderField()),
                       ],
                     ),
-
                     const SizedBox(height: 15),
-
                     _buildModernField(
                       _addressController,
                       "Delivery Address",
                       Icons.location_on_outlined,
                       maxLines: 2,
                     ),
-
                     const SizedBox(height: 35),
-
                     _isLoading
                         ? const Center(
-                      child: CircularProgressIndicator(color: Colors.red),
-                    )
+                            child: CircularProgressIndicator(color: Colors.red),
+                          )
                         : ElevatedButton(
-                      onPressed: _updateProfile,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 60),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        "Save Changes",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
+                            onPressed: _updateProfile,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(double.infinity, 60),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: const Text(
+                              "Save Changes",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                     const SizedBox(height: 15),
-
                     OutlinedButton(
                       onPressed: _signOut,
                       style: OutlinedButton.styleFrom(
@@ -379,7 +357,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -392,13 +369,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildModernField(
-      TextEditingController controller,
-      String label,
-      IconData icon, {
-        bool readOnly = false,
-        int maxLines = 1,
-        TextInputType? keyboardType,
-      }) {
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    bool readOnly = false,
+    int maxLines = 1,
+    TextInputType? keyboardType,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -410,9 +387,7 @@ class _ProfilePageState extends State<ProfilePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-
         const SizedBox(height: 8),
-
         TextField(
           controller: controller,
           readOnly: readOnly,
@@ -484,9 +459,7 @@ class _ProfilePageState extends State<ProfilePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-
         const SizedBox(height: 8),
-
         DropdownButtonFormField<String>(
           value: ["Male", "Female"].contains(_genderController.text)
               ? _genderController.text

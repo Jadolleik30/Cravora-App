@@ -32,13 +32,27 @@ $stmt->bind_param("sssssii", $name, $phone, $address, $dobValue, $gender, $profi
 
 if ($stmt->execute()) {
     $fetch = $conn->prepare("SELECT id, name, email, role, phone, address, dob, gender, points, is_verified, profile_completed FROM users WHERE id = ?");
+    if (!$fetch) {
+        echo json_encode(["status" => "error", "message" => "Could not load updated profile"]);
+        $stmt->close();
+        $conn->close();
+        exit;
+    }
+
     $fetch->bind_param("i", $user_id);
     $fetch->execute();
     $result = $fetch->get_result();
     $user = $result->fetch_assoc();
     $fetch->close();
 
-    echo json_encode(["status" => "success", "message" => "Profile updated", "user" => $user]);
+    if (!$user) {
+        echo json_encode(["status" => "error", "message" => "User not found"]);
+        $stmt->close();
+        $conn->close();
+        exit;
+    }
+
+    echo json_encode(["status" => "success", "message" => "Profile updated", "user" => cravora_user_payload($user)]);
 } else {
     echo json_encode(["status" => "error", "message" => "Failed to update profile"]);
 }

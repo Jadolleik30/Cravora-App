@@ -79,10 +79,30 @@ if ($result->num_rows > 0) {
     $user = $userResult->fetch_assoc();
     $fetch->close();
 
+    if (!$user) {
+        echo json_encode([
+            "status" => "error",
+            "message" => "Could not load verified user"
+        ]);
+        $conn->close();
+        exit;
+    }
+
+    $payload = cravora_user_payload($user);
+
+    if ((int)$payload['profile_completed'] === 1 && (int)($user['profile_completed'] ?? 0) !== 1) {
+        $markProfile = $conn->prepare("UPDATE users SET profile_completed = 1 WHERE id = ?");
+        if ($markProfile) {
+            $markProfile->bind_param("i", $userId);
+            $markProfile->execute();
+            $markProfile->close();
+        }
+    }
+
     echo json_encode([
         "status" => "success",
         "message" => "Email verified successfully",
-        "user" => $user
+        "user" => $payload
     ]);
 
 } else {

@@ -21,6 +21,21 @@ class _VerifyPageState extends State<VerifyPage> {
   bool _isLoading = false;
   bool _isResending = false;
 
+  Map<String, dynamic>? _decodeJson(String body) {
+    if (body.trim().isEmpty) return null;
+
+    try {
+      final decoded = json.decode(body);
+      if (decoded is Map) {
+        return Map<String, dynamic>.from(decoded);
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
+
   Future<void> verifyEmail() async {
     final code = _codeController.text.trim();
 
@@ -42,11 +57,15 @@ class _VerifyPageState extends State<VerifyPage> {
         },
       );
 
-      final data = json.decode(response.body);
+      final data = _decodeJson(response.body);
+      if (data == null) {
+        throw FormatException("Invalid server response");
+      }
 
       if (data['status'] == 'success') {
-        if (data['user'] != null) {
-          Session.login(data['user']);
+        final user = data['user'];
+        if (user is Map) {
+          Session.login(Map<String, dynamic>.from(user));
         }
 
         if (!mounted) return;
@@ -57,8 +76,12 @@ class _VerifyPageState extends State<VerifyPage> {
           ),
         );
 
-        if (!Session.profileCompleted) {
-          Navigator.pushNamedAndRemoveUntil(context, '/profile', (route) => false);
+        if (!Session.isLoggedIn) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/login', (route) => false);
+        } else if (!Session.profileCompleted) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/profile', (route) => false);
         } else {
           Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
         }
@@ -97,13 +120,17 @@ class _VerifyPageState extends State<VerifyPage> {
         },
       );
 
-      final data = json.decode(response.body);
+      final data = _decodeJson(response.body);
+      if (data == null) {
+        throw FormatException("Invalid server response");
+      }
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(data['message'] ?? "Verification code sent"),
-          backgroundColor: data['status'] == 'success' ? Colors.green : Colors.red,
+          backgroundColor:
+              data['status'] == 'success' ? Colors.green : Colors.red,
         ),
       );
     } catch (e) {
