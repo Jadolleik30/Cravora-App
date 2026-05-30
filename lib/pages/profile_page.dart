@@ -13,17 +13,17 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _nameController =
-  TextEditingController(text: Session.userName);
+  TextEditingController(text: Session.userName ?? '');
   final TextEditingController _emailController =
-  TextEditingController(text: Session.userEmail);
+  TextEditingController(text: Session.userEmail ?? '');
   final TextEditingController _phoneController =
-  TextEditingController(text: Session.userPhone);
+  TextEditingController(text: Session.userPhone ?? '');
   final TextEditingController _addressController =
-  TextEditingController(text: Session.userAddress);
+  TextEditingController(text: Session.userAddress ?? '');
   final TextEditingController _dobController =
-  TextEditingController(text: Session.userDOB);
+  TextEditingController(text: Session.userDOB ?? '');
   final TextEditingController _genderController =
-  TextEditingController(text: Session.userGender);
+  TextEditingController(text: Session.userGender ?? '');
 
   bool _isLoading = false;
 
@@ -87,7 +87,11 @@ class _ProfilePageState extends State<ProfilePage> {
         );
 
         if (wasIncomplete) {
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/home',
+                (route) => false,
+          );
         }
       } else {
         if (!mounted) return;
@@ -115,6 +119,15 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  void _signOut() {
+    Session.logout();
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/login',
+          (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool canLeave = Session.profileCompleted;
@@ -129,7 +142,6 @@ class _ProfilePageState extends State<ProfilePage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-
         appBar: AppBar(
           title: const Text(
             "Account",
@@ -141,19 +153,13 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Colors.orange,
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
-
-          // Hide drawer/back icon if profile is incomplete
           automaticallyImplyLeading: canLeave,
-
           actions: [
             if (canLeave) NotificationBell(),
             const SizedBox(width: 10),
           ],
         ),
-
-        // User cannot open drawer until profile is complete
         drawer: canLeave ? UserDrawer() : null,
-
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Column(
@@ -162,7 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
-                  color: Colors.orange.shade100,
+                  color: Colors.orangeAccent.shade100,
                   child: Text(
                     "Complete your profile to continue using Cravora.",
                     textAlign: TextAlign.center,
@@ -216,8 +222,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 15),
 
                     Text(
-                      Session.userName.isNotEmpty
-                          ? Session.userName
+                      (Session.userName ?? '').isNotEmpty
+                          ? Session.userName!
                           : "User Name",
                       style: const TextStyle(
                         fontSize: 24,
@@ -226,8 +232,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
 
                     Text(
-                      Session.userEmail.isNotEmpty
-                          ? Session.userEmail
+                      (Session.userEmail ?? '').isNotEmpty
+                          ? Session.userEmail!
                           : "user@example.com",
                       style: const TextStyle(
                         color: Colors.grey,
@@ -355,33 +361,24 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 15),
 
-                    // Show Sign Out only after profile is complete
-                    if (canLeave)
-                      OutlinedButton(
-                        onPressed: () {
-                          Session.logout();
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/home',
-                                (route) => false,
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.grey.shade700,
-                          side: BorderSide(color: Colors.grey.shade300),
-                          minimumSize: const Size(double.infinity, 55),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        child: const Text(
-                          "Sign Out",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    OutlinedButton(
+                      onPressed: _signOut,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.grey.shade700,
+                        side: BorderSide(color: Colors.grey.shade300),
+                        minimumSize: const Size(double.infinity, 55),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
+                      child: const Text(
+                        "Sign Out",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
 
                     const SizedBox(height: 40),
                   ],
