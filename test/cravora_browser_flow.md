@@ -8,16 +8,16 @@
 
 ## Web Preview
 
-Run the Flutter web preview from the project root:
+Run the visible Chrome preview from the project root:
+
+```powershell
+flutter run -d chrome
+```
+
+Flutter opens Chrome automatically. If you want a fixed URL for automation or sharing inside the Codex in-app browser, use the optional web-server target:
 
 ```powershell
 flutter run -d web-server --web-hostname=127.0.0.1 --web-port=7357
-```
-
-Open:
-
-```text
-http://127.0.0.1:7357
 ```
 
 The app keeps Android emulator compatibility through `Config.baseUrl`: web uses `http://localhost/code/backend/`, while Android uses `http://10.0.2.2/code/backend/`.
@@ -65,7 +65,7 @@ Invoke-WebRequest -UseBasicParsing http://localhost/code/backend/get_categories.
 
 ## Observed Local Result
 
-Validated on the Flutter web-server preview at `http://127.0.0.1:7357`:
+Validated on the Flutter Chrome preview started with `flutter run -d chrome`:
 
 - Signup opened the verification page.
 - Login before verification returned to the verification page.
@@ -73,5 +73,5 @@ Validated on the Flutter web-server preview at `http://127.0.0.1:7357`:
 - Back navigation stayed on the profile page while the profile was incomplete, and the warning banner was visible.
 - Saving name, phone, address, date of birth, and gender redirected to `/delivery`.
 - Logging in again with the completed user went directly to `/delivery`.
-- `/delivery` and `/delivery_food` both loaded the browse menu.
+- `/home`, `/login`, `/signup`, `/profile`, `/delivery`, and `/delivery_food` all opened without route-generator errors.
 - Browser console checks did not show JSON parse errors.
