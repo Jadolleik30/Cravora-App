@@ -28,6 +28,9 @@ if ($result->num_rows > 0) {
             echo json_encode([
                 "status" => "unverified",
                 "message" => "Please verify your email first.",
+                "account_created" => false,
+                "email_sent" => false,
+                "requires_verification" => true,
                 "email" => $user['email']
             ]);
             exit;

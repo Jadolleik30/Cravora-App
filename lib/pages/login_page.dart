@@ -86,6 +86,8 @@ class _LoginPageState extends State<LoginPage> {
           MaterialPageRoute(
             builder: (_) => VerifyPage(
               email: data['email'] ?? email,
+              message: data['message'] ??
+                  "Please verify your email first. If you did not receive a code, press Resend Code.",
             ),
           ),
           (route) => false,

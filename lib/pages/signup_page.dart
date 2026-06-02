@@ -18,6 +18,21 @@ class _SignupPageState extends State<SignupPage> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
+  Map<String, dynamic>? _decodeJson(String body) {
+    if (body.trim().isEmpty) return null;
+
+    try {
+      final decoded = json.decode(body);
+      if (decoded is Map) {
+        return Map<String, dynamic>.from(decoded);
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
+
   Future<void> _signup() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -42,25 +57,51 @@ class _SignupPageState extends State<SignupPage> {
         },
       );
 
-      final data = json.decode(response.body);
-      if (data['status'] == 'success') {
-        Navigator.push(
+      final data = _decodeJson(response.body);
+      if (data == null) {
+        throw FormatException("Invalid server response");
+      }
+
+      final status = data['status']?.toString();
+      final requiresVerification = data['requires_verification'] == true;
+
+      if ((status == 'success' || status == 'unverified') &&
+          requiresVerification) {
+        if (!mounted) return;
+
+        final email =
+            (data['email'] ?? _emailController.text.trim()).toString();
+        final message = status == 'success'
+            ? (data['email_sent'] == false
+                ? "Account created, but email could not be sent. Press Resend Code."
+                : "Account created. Check your email for the verification code. If you did not receive it, press Resend Code.")
+            : (data['message']?.toString().isNotEmpty == true
+                ? data['message'].toString()
+                : "Please verify your account. If you did not receive a code, press Resend Code.");
+
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (_) => VerifyPage(
-              email: data['email'] ?? _emailController.text.trim(),
+              email: email,
+              message: message,
             ),
           ),
         );
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(data['message']), backgroundColor: Colors.red));
+            content: Text(data['message'] ?? "Signup failed"),
+            backgroundColor: Colors.red));
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Connection Error"), backgroundColor: Colors.red));
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import '../config.dart';
@@ -7,9 +8,11 @@ import '../session.dart';
 
 class VerifyPage extends StatefulWidget {
   final String email;
+  final String? message;
 
   VerifyPage({
     required this.email,
+    this.message,
   });
 
   @override
@@ -20,6 +23,14 @@ class _VerifyPageState extends State<VerifyPage> {
   final TextEditingController _codeController = TextEditingController();
   bool _isLoading = false;
   bool _isResending = false;
+  late String _pageMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageMessage = widget.message ??
+        "Account created. Check your email for the verification code. If you did not receive it, press Resend Code.";
+  }
 
   Map<String, dynamic>? _decodeJson(String body) {
     if (body.trim().isEmpty) return null;
@@ -39,9 +50,9 @@ class _VerifyPageState extends State<VerifyPage> {
   Future<void> verifyEmail() async {
     final code = _codeController.text.trim();
 
-    if (code.isEmpty) {
+    if (!RegExp(r'^\d{6}$').hasMatch(code)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Enter verification code")),
+        SnackBar(content: Text("Enter the 6-digit verification code")),
       );
       return;
     }
@@ -127,6 +138,12 @@ class _VerifyPageState extends State<VerifyPage> {
       }
 
       if (!mounted) return;
+      if (data['status'] == 'success' && data['email_sent'] == true) {
+        setState(() {
+          _pageMessage = "A new verification code was sent to ${widget.email}.";
+        });
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(data['message'] ?? "Verification code sent"),
@@ -181,11 +198,20 @@ class _VerifyPageState extends State<VerifyPage> {
             ),
             SizedBox(height: 10),
             Text(
-              "Enter the 6-digit code sent to ${widget.email}",
+              _pageMessage,
               style: TextStyle(
                 color: Colors.grey.shade600,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              widget.email,
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: 30),
@@ -193,6 +219,10 @@ class _VerifyPageState extends State<VerifyPage> {
               controller: _codeController,
               keyboardType: TextInputType.number,
               maxLength: 6,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(6),
+              ],
               decoration: InputDecoration(
                 labelText: "Enter Code",
                 prefixIcon: Icon(Icons.password_outlined, color: Colors.red),

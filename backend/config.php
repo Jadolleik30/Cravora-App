@@ -1,5 +1,6 @@
 <?php
 ini_set('display_errors', '0');
+ini_set('log_errors', '1');
 error_reporting(E_ALL);
 
 header("Access-Control-Allow-Origin: *");
@@ -9,6 +10,64 @@ header("Content-Type: application/json; charset=UTF-8");
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
     exit;
+}
+
+function cravora_mask_email($email) {
+    $email = trim((string)$email);
+    if ($email === '' || strpos($email, '@') === false) {
+        return '';
+    }
+
+    [$name, $domain] = explode('@', $email, 2);
+    $visible = substr($name, 0, 2);
+    return $visible . str_repeat('*', max(1, strlen($name) - 2)) . '@' . $domain;
+}
+
+function cravora_sanitize_log_context($context) {
+    $safe = [];
+
+    foreach ($context as $key => $value) {
+        $lowerKey = strtolower((string)$key);
+
+        if (
+            strpos($lowerKey, 'password') !== false ||
+            strpos($lowerKey, 'secret') !== false ||
+            strpos($lowerKey, 'token') !== false ||
+            strpos($lowerKey, 'code') !== false
+        ) {
+            $safe[$key] = '[redacted]';
+            continue;
+        }
+
+        if (strpos($lowerKey, 'email') !== false) {
+            $safe[$key] = cravora_mask_email($value);
+            continue;
+        }
+
+        if (is_array($value)) {
+            $safe[$key] = cravora_sanitize_log_context($value);
+            continue;
+        }
+
+        $safe[$key] = $value;
+    }
+
+    return $safe;
+}
+
+function cravora_log($event, $context = []) {
+    $payload = cravora_sanitize_log_context($context);
+    $json = json_encode($payload, JSON_UNESCAPED_SLASHES);
+
+    if ($json === false) {
+        $json = '{}';
+    }
+
+    error_log('[Cravora] ' . $event . ' ' . $json);
+}
+
+function cravora_public_email_error() {
+    return 'Email could not be sent. Please contact support or try resend.';
 }
 
 $host = "localhost";

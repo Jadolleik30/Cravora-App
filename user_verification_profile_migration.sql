@@ -5,7 +5,7 @@ SET @schema_name = DATABASE();
 SET @sql = (
     SELECT IF(
         COUNT(*) = 0,
-        'ALTER TABLE `users` ADD COLUMN `verification_code` VARCHAR(10) DEFAULT NULL',
+        'ALTER TABLE `users` ADD COLUMN `verification_code` VARCHAR(6) DEFAULT NULL',
         'SELECT ''verification_code already exists'' AS message'
     )
     FROM INFORMATION_SCHEMA.COLUMNS
@@ -50,6 +50,11 @@ DEALLOCATE PREPARE stmt;
 UPDATE `users`
 SET `is_verified` = 1
 WHERE `is_verified` IS NULL;
+
+ALTER TABLE `users`
+  MODIFY COLUMN `verification_code` VARCHAR(6) DEFAULT NULL,
+  MODIFY COLUMN `is_verified` TINYINT(1) NOT NULL DEFAULT 0,
+  MODIFY COLUMN `profile_completed` TINYINT(1) NOT NULL DEFAULT 0;
 
 UPDATE `users`
 SET `profile_completed` = 1

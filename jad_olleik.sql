@@ -457,9 +457,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   `gender` varchar(10) DEFAULT NULL,
   `role` varchar(20) DEFAULT 'user',
   `points` int DEFAULT '0',
-  `verification_code` varchar(10) DEFAULT NULL,
-  `is_verified` tinyint(1) DEFAULT '1',
-  `profile_completed` tinyint(1) DEFAULT '0',
+  `verification_code` varchar(6) DEFAULT NULL,
+  `is_verified` tinyint(1) NOT NULL DEFAULT '0',
+  `profile_completed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4  ;
